@@ -2,6 +2,7 @@
 # dist/ をバリューサーバーのサブドメインのドキュメントルートへ rsync で上げる。
 #   ./deploy.sh            ビルドして、差分を表示（dry-run）してから本番に反映する
 #   ./deploy.sh --dry-run  ビルドして差分を表示するだけ
+#   ./deploy.sh --yes      確認を聞かずに反映する（stdin の無い環境、Claude の Bash ツールから実行するとき）
 # 接続情報は .env.deploy（gitignore）に書く。書式は .env.deploy.example。
 # フォームの設定（config.php）はドキュメントルートの外の PRIVATE_DIR に置く。初回は scripts/setup_private.sh で作る。
 set -euo pipefail
@@ -47,8 +48,10 @@ echo "== 差分（dry-run）"
 "${RSYNC[@]}" --dry-run
 [ "${1:-}" = "--dry-run" ] && exit 0
 
-read -r -p "この内容で反映しますか？ [y/N] " ans
-[ "$ans" = "y" ] || { echo "中止しました"; exit 1; }
+if [ "${1:-}" != "--yes" ]; then
+  read -r -p "この内容で反映しますか？ [y/N] " ans || ans=""
+  [ "$ans" = "y" ] || { echo "中止しました"; exit 1; }
+fi
 "${RSYNC[@]}"
 
 echo "== 反映の確認"

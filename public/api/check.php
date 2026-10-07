@@ -22,6 +22,7 @@ $out = [
     'mbstring' => extension_loaded('mbstring'),
     'mail' => function_exists('mail'),
     'allow_url_fopen' => (bool)ini_get('allow_url_fopen'),
+    'curl' => function_exists('curl_init'),
     'private_dir_writable' => is_writable($config['private_dir']),
     'db_under_docroot' => str_starts_with(realpath(dirname($config['db_path'])) ?: '', realpath($_SERVER['DOCUMENT_ROOT'] ?? '') ?: '//'),
     'timezone' => date_default_timezone_get(),

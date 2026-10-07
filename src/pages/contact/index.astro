@@ -227,7 +227,7 @@ const sitekey = import.meta.env.PUBLIC_TURNSTILE_SITEKEY || '1x00000000000000000
       return;
     }
     const yen = pricing.base_price + Math.max(0, n - pricing.base_photos) * pricing.per_extra_photo;
-    out.innerHTML = `料金の目安 <strong>${yen.toLocaleString('ja-JP')}円</strong>（税込・修正1回込み）<br><small>${priceNote}</small>`;
+    out.innerHTML = `料金の目安 <strong>${yen.toLocaleString('ja-JP')}円</strong>（修正1回込み）<br><small>${priceNote}</small>`;
   };
   sel.addEventListener('change', update);
   update();

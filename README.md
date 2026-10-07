@@ -60,3 +60,9 @@ bash scripts/setup_private.sh        # 初回だけ。ドキュメントルー�
 公開直後に 500 が出たら、`public/.htaccess` の `Options -Indexes` を消す（共有サーバーで Options の上書きが許されていないと 500 になる。他の行は `IfModule` で守ってある）。
 
 `DEPLOY_PATH` の末尾がサブドメイン用のフォルダでないとき、または上げ先に WordPress のファイルがあるときは止まる（`rsync --delete` で WordPress を消さないため）。
+
+公開直後の確認（`scripts/setup_private.sh` が表示した合言葉を使う）:
+
+1. `https://madori.macmariya.com/api/check.php?token=…` で `pdo_sqlite`・`private_dir_writable` が true、`allow_url_fopen` か `curl` のどちらかが true、`db_under_docroot` が false。500 になるときは config.php の権限（PHP の実行ユーザーが読めるか）を疑う
+2. 自分宛てにフォームから 1 件送り、通知と控えの両方が届くこと、Gmail の「メッセージのソースを表示」で SPF が PASS であることを確かめる
+3. 確かめたら config.php の `check_token` を空にし、試験の行を DB から消す

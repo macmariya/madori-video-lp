@@ -20,5 +20,11 @@ ErrorDocument 404 /404.html
 
 # データベース・SQL・メールの控えは Web から開けない（本来はドキュメントルートの外に置くので、置き間違えたときの備え）
 <FilesMatch "\.(sqlite|sqlite3|db|sql|eml|log)$">
-  Require all denied
+  <IfModule mod_authz_core.c>
+    Require all denied
+  </IfModule>
+  <IfModule !mod_authz_core.c>
+    Order allow,deny
+    Deny from all
+  </IfModule>
 </FilesMatch>

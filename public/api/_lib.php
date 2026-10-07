@@ -110,14 +110,25 @@ function verify_turnstile(array $config, string $token): bool
     if ($token === '') {
         return false;
     }
+    $url = 'https://challenges.cloudflare.com/turnstile/v0/siteverify';
     $body = http_build_query(['secret' => $secret, 'response' => $token, 'remoteip' => client_ip()]);
-    $ctx = stream_context_create(['http' => [
-        'method' => 'POST',
-        'header' => "Content-Type: application/x-www-form-urlencoded\r\n",
-        'content' => $body,
-        'timeout' => 10,
-    ]]);
-    $res = @file_get_contents('https://challenges.cloudflare.com/turnstile/v0/siteverify', false, $ctx);
+    if (ini_get('allow_url_fopen')) {
+        $ctx = stream_context_create(['http' => [
+            'method' => 'POST',
+            'header' => "Content-Type: application/x-www-form-urlencoded\r\n",
+            'content' => $body,
+            'timeout' => 10,
+        ]]);
+        $res = @file_get_contents($url, false, $ctx);
+    } elseif (function_exists('curl_init')) {
+        // 共有サーバーで URL の読み込み（allow_url_fopen）が切られている場合
+        $ch = curl_init($url);
+        curl_setopt_array($ch, [CURLOPT_POST => true, CURLOPT_POSTFIELDS => $body, CURLOPT_RETURNTRANSFER => true, CURLOPT_TIMEOUT => 10]);
+        $res = curl_exec($ch);
+    } else {
+        error_log('[madori inquiry] turnstile: allow_url_fopen も curl も使えない');
+        return false;
+    }
     if ($res === false) {
         return false;
     }

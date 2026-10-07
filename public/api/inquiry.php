@@ -199,7 +199,7 @@ try {
 }
 
 // メール本文（通知・自動返信で共通の「内容の控え」）
-$yen = static fn(?int $n): string => $n === null ? '写真の枚数を伺ってお見積りします' : number_format($n) . '円（税込）';
+$yen = static fn(?int $n): string => $n === null ? '写真の枚数を伺ってお見積りします' : number_format($n) . '円';
 $usageLabels = implode('、', array_map(fn($u) => option_label($form, 'usage', $u), $usage));
 $lines = [
     '受付番号：' . $publicId,
