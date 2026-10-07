@@ -43,4 +43,8 @@ cp .env.deploy.example .env.deploy   # 接続情報を埋める（初回だけ�
 ./deploy.sh                          # 差分を見てから y で反映
 ```
 
+`public/media/` の動画・画像はファイル名にハッシュが無く、30 日のキャッシュを付けている。同じ名前で差し替えたときは Cloudflare のキャッシュを purge するか、ファイル名を変える。
+
+公開直後に 500 が出たら、`public/.htaccess` の `Options -Indexes` を消す（共有サーバーで Options の上書きが許されていないと 500 になる。他の行は `IfModule` で守ってある）。
+
 `DEPLOY_PATH` の末尾がサブドメイン用のフォルダでないとき、または上げ先に WordPress のファイルがあるときは止まる（`rsync --delete` で WordPress を消さないため）。

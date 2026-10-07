@@ -32,13 +32,15 @@ ffmpeg -v error -y -ss 0.2 -t 4.7 -i "$RAW" \
   -map "[v]" -an -c:v libx264 -preset slow -crf 26 -profile:v high -movflags +faststart "$OUT/hero.mp4"
 ffmpeg -v error -y -ss 0.2 -i "$RAW" -frames:v 1 -vf "crop=1280:720:0:8" -q:v 3 "$OUT/hero.jpg"
 
-clip compare-ldk    19.0  2.4   # LDK・奥に I 型キッチン（4 カット目）
-clip compare-kitchen 22.7 2.6   # キッチン（5 カット目）
+# 比較の対は、入力写真を切り抜かずにそのまま H3 に渡したカットに限る（still_plan.json の crop が写真全体のもの）。
+# 切り抜いたカット（still03・still04）を元写真と並べると「構図を変えない」の説明と食い違うため
+clip compare-kitchen 23.3 2.4   # キッチン（still05・push_in・切り抜きなし）
+clip compare-room    27.4 2.3   # 洋室1（still06・pan_left・切り抜きなし）
 
 # 比較用の元写真（同じカットの入力写真）
 photo() { sips -s format jpeg -s formatOptions 80 -Z 1280 "$1" --out "$OUT/$2.jpg" >/dev/null; }
-photo "$P2LDK/03_ldk_to_kitchen.png" photo-ldk
 photo "$P2LDK/05_kitchen.png"        photo-kitchen
+photo "$P2LDK/06_room1.png"          photo-room
 
 # YouTube の制作例 4 本のポスター（クリックで iframe を読み込む）
 poster() { ffmpeg -v error -y -ss "$2" -i "$1" -frames:v 1 -vf scale=960:540:flags=lanczos -q:v 4 "$OUT/$3.jpg"; }
