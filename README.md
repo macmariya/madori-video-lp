@@ -46,7 +46,9 @@ PHP を直したら `public/api/` から `dist/api/` へ写すか、`serve_local
 
 ## デプロイ
 
-バリューサーバーの SSH は、コントロールパネル（お役立ちツール → SSH接続）で接続元の IP を登録した場合だけつながる。**登録は 30 日で切れる**ので、つながらないときはまず登録し直す（登録から約 5 分で有効）。鍵は `~/.ssh/valueserver_madori`、接続名は `~/.ssh/config` の `Host valueserver`。
+バリューサーバーの SSH は、コントロールパネル（お役立ちツール → SSH接続）で接続元の IP を登録した場合だけつながる。**登録は 30 日で切れる**ので、つながらないときはまず登録し直す（登録から約 5 分で有効）。鍵は `~/.ssh/valueserver_madori`、接続名は `~/.ssh/config.d/valueserver.conf` の `Host valueserver`（`~/.ssh/config` は dotfiles の管理なので書き足さない）。共通設定がパスワード認証を切っているので、鍵を登録し直すときは `ssh-copy-id -o PasswordAuthentication=yes -i ~/.ssh/valueserver_madori.pub {ユーザー}@{SSH ホスト}`。
+
+サーバーの PHP はドメインごとに選べる（既定は 7.4、8.5 まである）。フォームの PHP は 7.4 以上で動くように書いてあり、2026-10-08 にサーバーの 7.4.33 と 8.4.17 で DB 作成・料金・Turnstile・採番を実際に動かして確かめた。
 
 ```bash
 cp .env.deploy.example .env.deploy   # 接続情報を埋める（初回だけ）

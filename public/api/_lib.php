@@ -1,6 +1,6 @@
 <?php
 // 問い合わせ API の共通処理。直接は開けない（api/.htaccess で _ から始まるファイルを拒否）。
-// PHP 8.0 以上で動くように書く（バリューサーバーの版に合わせ、8.1 以降の構文は使わない）。
+// PHP 7.4 以上で動くように書く（バリューサーバーは Web の PHP をドメインごとに選べ、既定は 7.4。8.0 以降の関数・構文は使わない）。
 declare(strict_types=1);
 
 date_default_timezone_set('Asia/Tokyo');
