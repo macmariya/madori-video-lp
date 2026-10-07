@@ -175,7 +175,7 @@ const sitekey = import.meta.env.PUBLIC_TURNSTILE_SITEKEY || '1x00000000000000000
               <li>受注に至らなかったお問い合わせの記録は、最後のご連絡から1年後に削除します。ご注文いただいたお取引の記録は、法令で定められた期間保存します。</li>
               <li>ご自身の情報の開示・訂正・削除は、<a href={`mailto:${SITE.mail}`}>{SITE.mail}</a> までお申し出ください。</li>
             </ul>
-            <p>このほかの取り扱いは<a href={SITE.policyUrl}>プライバシーポリシー</a>をご覧ください。</p>
+            <p>このほかの取り扱いは<a href={SITE.policyUrl} target="_blank" rel="noopener">プライバシーポリシー（別のタブで開きます）</a>をご覧ください。</p>
           </div>
           <label class="choice choice-solo consent"><input type="checkbox" name="consent" value="1" required /> 個人情報の取り扱いに同意する <span class="req">必須</span></label>
         </fieldset>
