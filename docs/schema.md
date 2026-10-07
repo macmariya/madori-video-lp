@@ -50,6 +50,14 @@ ordered → materials_received → in_production → first_draft_sent → revisi
 - **外部の番号**: ココナラの取引は `orders.coconala_order_id`、freee の取引は `orders.freee_deal_id`
 - **納品後 30 日の削除**（blog-vault `06_ビジネス手順.md` §5.1）: `orders.data_delete_due` に納品日＋30 日を入れ、消したら `data_deleted_at` を入れる。会話記録の削除に使う Claude のセッション ID は `orders.claude_session_ids`（JSON 配列）
 
+## 保存期間（2026-10-08 ユーザー決定）
+
+- 受注に至らなかった問い合わせ（`status` が `won` 以外で、`orders` から参照されていないもの）は、**最後のご連絡（`updated_at`）から 1 年**で消す。状態の履歴・メールの記録も一緒に消し、問い合わせも受注も残っていない顧客も消す
+- `submission_log` は 1 年で消す
+- 受注の記録（`orders` と、受注につながった問い合わせ）は消さない。帳簿として残す
+- 消すのは `public/api/_purge.php`。サーバーで `/usr/local/bin/php84 -q ~/public_html/madori.macmariya.com/api/_purge.php` で件数を見て、`--apply` で消す。月 1 回、手で流すか、コントロールパネルの CRON ジョブに登録する
+- 返信や見積で状態を変えたら、必ず `updated_at` も更新する（下の例のとおり）。更新しないと、やり取りの途中で消えることがある
+
 ## よく使う操作
 
 サーバーで `sqlite3 ~/madori-private/madori.sqlite`（パスは `.env.deploy` の `PRIVATE_DIR`）。
