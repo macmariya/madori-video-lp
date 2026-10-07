@@ -378,7 +378,7 @@ ul, ol { margin: 0; padding: 0; }
 .fs legend + * { clear: both; }
 .field { display: grid; gap: 8px; min-width: 0; }
 .field > label, .field > .label { font-weight: 700; font-size: 15px; }
-.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+.field-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 22px; }
 .inquiry input[type='text'], .inquiry input[type='email'], .inquiry input[type='tel'], .inquiry input[type='date'],
 .inquiry select, .inquiry textarea {
   width: 100%;
@@ -392,6 +392,9 @@ ul, ol { margin: 0; padding: 0; }
   color: var(--text);
 }
 .inquiry textarea { min-height: 140px; resize: vertical; }
+/* iPad・iPhone の Safari は日付欄に固有の最小幅と中央寄せを付けるので、枠からはみ出して隣の欄に重なる */
+.inquiry input[type='date'] { display: block; min-width: 0; max-width: 100%; -webkit-appearance: none; appearance: none; text-align: left; }
+.inquiry input[type='date']::-webkit-date-and-time-value { text-align: left; }
 .inquiry :is(input, select, textarea):focus-visible { outline: 3px solid rgb(232 120 40 / 0.35); border-color: var(--accent); }
 .choices { display: grid; gap: 8px; }
 .choices-inline { display: flex; flex-wrap: wrap; gap: 8px 18px; }
