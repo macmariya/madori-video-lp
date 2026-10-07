@@ -1,0 +1,92 @@
+{
+  "form_version": "2026-10-08",
+  "pricing": {
+    "version": "2026-10-opening",
+    "base_photos": 6,
+    "base_price": 8000,
+    "per_extra_photo": 1000,
+    "max_photos": 20
+  },
+  "options": {
+    "customer_type": [
+      { "value": "real_estate_sales", "label": "不動産会社（売買）" },
+      { "value": "real_estate_rental", "label": "不動産会社（賃貸・管理）" },
+      { "value": "builder", "label": "工務店・ハウスメーカー" },
+      { "value": "renovation", "label": "リフォーム会社" },
+      { "value": "other", "label": "その他" }
+    ],
+    "property_type": [
+      { "value": "house", "label": "戸建て" },
+      { "value": "condo", "label": "マンション" },
+      { "value": "apartment", "label": "アパート" },
+      { "value": "store_office", "label": "店舗・事務所" },
+      { "value": "other", "label": "その他" }
+    ],
+    "photo_count": [
+      { "value": "1", "label": "1枚" }, { "value": "2", "label": "2枚" }, { "value": "3", "label": "3枚" },
+      { "value": "4", "label": "4枚" }, { "value": "5", "label": "5枚" }, { "value": "6", "label": "6枚" },
+      { "value": "7", "label": "7枚" }, { "value": "8", "label": "8枚" }, { "value": "9", "label": "9枚" },
+      { "value": "10", "label": "10枚" }, { "value": "11", "label": "11枚" }, { "value": "12", "label": "12枚" },
+      { "value": "13", "label": "13枚" }, { "value": "14", "label": "14枚" }, { "value": "15", "label": "15枚" },
+      { "value": "16", "label": "16枚" }, { "value": "17", "label": "17枚" }, { "value": "18", "label": "18枚" },
+      { "value": "19", "label": "19枚" }, { "value": "20", "label": "20枚" },
+      { "value": "over20", "label": "21枚以上" },
+      { "value": "unknown", "label": "まだ分からない" }
+    ],
+    "floorplan_type": [
+      { "value": "dimensioned", "label": "寸法の入った図面がある（施工図など）" },
+      { "value": "no_dimension", "label": "寸法の無い図面がある（販売図面など）" },
+      { "value": "none", "label": "図面は無い" },
+      { "value": "unknown", "label": "分からない" }
+    ],
+    "photo_source": [
+      { "value": "original", "label": "撮影した元の写真がある" },
+      { "value": "portal", "label": "ポータルサイトなどに載せた写真だけある" },
+      { "value": "not_yet", "label": "これから撮影する" }
+    ],
+    "usage": [
+      { "value": "own_site", "label": "自社サイト" },
+      { "value": "sns", "label": "SNS" },
+      { "value": "store_monitor", "label": "店頭モニター" },
+      { "value": "portal", "label": "ポータルサイト" },
+      { "value": "other", "label": "その他" }
+    ],
+    "expected_volume": [
+      { "value": "single", "label": "今回の1件だけ" },
+      { "value": "monthly_1_2", "label": "月に1〜2件ほど" },
+      { "value": "monthly_3plus", "label": "月に3件以上" },
+      { "value": "undecided", "label": "まだ分からない" }
+    ],
+    "contact_preference": [
+      { "value": "email", "label": "メール" },
+      { "value": "phone", "label": "電話" }
+    ],
+    "prefecture": [
+      { "value": "", "label": "選択してください" },
+      { "value": "北海道", "label": "北海道" }, { "value": "青森県", "label": "青森県" }, { "value": "岩手県", "label": "岩手県" },
+      { "value": "宮城県", "label": "宮城県" }, { "value": "秋田県", "label": "秋田県" }, { "value": "山形県", "label": "山形県" },
+      { "value": "福島県", "label": "福島県" }, { "value": "茨城県", "label": "茨城県" }, { "value": "栃木県", "label": "栃木県" },
+      { "value": "群馬県", "label": "群馬県" }, { "value": "埼玉県", "label": "埼玉県" }, { "value": "千葉県", "label": "千葉県" },
+      { "value": "東京都", "label": "東京都" }, { "value": "神奈川県", "label": "神奈川県" }, { "value": "新潟県", "label": "新潟県" },
+      { "value": "富山県", "label": "富山県" }, { "value": "石川県", "label": "石川県" }, { "value": "福井県", "label": "福井県" },
+      { "value": "山梨県", "label": "山梨県" }, { "value": "長野県", "label": "長野県" }, { "value": "岐阜県", "label": "岐阜県" },
+      { "value": "静岡県", "label": "静岡県" }, { "value": "愛知県", "label": "愛知県" }, { "value": "三重県", "label": "三重県" },
+      { "value": "滋賀県", "label": "滋賀県" }, { "value": "京都府", "label": "京都府" }, { "value": "大阪府", "label": "大阪府" },
+      { "value": "兵庫県", "label": "兵庫県" }, { "value": "奈良県", "label": "奈良県" }, { "value": "和歌山県", "label": "和歌山県" },
+      { "value": "鳥取県", "label": "鳥取県" }, { "value": "島根県", "label": "島根県" }, { "value": "岡山県", "label": "岡山県" },
+      { "value": "広島県", "label": "広島県" }, { "value": "山口県", "label": "山口県" }, { "value": "徳島県", "label": "徳島県" },
+      { "value": "香川県", "label": "香川県" }, { "value": "愛媛県", "label": "愛媛県" }, { "value": "高知県", "label": "高知県" },
+      { "value": "福岡県", "label": "福岡県" }, { "value": "佐賀県", "label": "佐賀県" }, { "value": "長崎県", "label": "長崎県" },
+      { "value": "熊本県", "label": "熊本県" }, { "value": "大分県", "label": "大分県" }, { "value": "宮崎県", "label": "宮崎県" },
+      { "value": "鹿児島県", "label": "鹿児島県" }, { "value": "沖縄県", "label": "沖縄県" }
+    ]
+  },
+  "limits": {
+    "company_name": 100,
+    "contact_name": 50,
+    "email": 254,
+    "phone": 20,
+    "layout": 30,
+    "message": 2000
+  }
+}

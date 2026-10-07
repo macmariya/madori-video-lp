@@ -4,17 +4,30 @@
 // 価格の書き方は景品表示法の決まり（blog-vault 31_Project/間取り図動画/01_マネタイズ設計.md §1.7）に従う。
 // 「今だけ」「期間限定」「先着」「お得」「○% オフ」「通常 ○円」は書かない。
 
+import form from '../../public/api/form.json';
+
 export const SITE = {
   url: 'https://madori.macmariya.com/',
   title: '室内写真から作るAI内覧動画｜不動産会社・工務店さま向け',
   description:
     'お手持ちの室内写真から、写真1枚ごとにカメラがゆっくり寄る・振る・前に進むAI内覧動画を制作します。不動産会社・工務店向け。料金は写真の枚数で決まり、6枚まで8,000円（オープニング価格）、初稿は3営業日。石川県から全国に対応します。',
-  contactUrl: 'https://www.macmariya.com/contact',
+  contactUrl: '/contact/',
   mail: 'info@macmariya.com',
   coconalaUrl: 'https://coconala.com/services/4440820',
   businessUrl: 'https://www.macmariya.com/business',
+  policyUrl: 'https://www.macmariya.com/policy',
   operator: 'マクマリ',
 };
+
+// 料金の計算の正本は public/api/form.json の pricing（PHP の概算と共用）
+export const FORM = form;
+export const PRICING = form.pricing;
+/** 写真の枚数から料金（税込）を出す。上限を超える・未定は null（要見積） */
+export function estimate(photos: number | null): number | null {
+  if (photos === null || photos < 1 || photos > PRICING.max_photos) return null;
+  return PRICING.base_price + Math.max(0, photos - PRICING.base_photos) * PRICING.per_extra_photo;
+}
+const yen = (n: number | null) => (n === null ? '' : `${n.toLocaleString('ja-JP')}円`);
 
 export const OPENING_PRICE_NOTE =
   'オープニング価格です。実績が増えたら改定します（時期は未定です）。ご注文後に料金が変わることはありません。';
@@ -42,11 +55,11 @@ export const SIZE_VIDEOS: Video[] = [
 ];
 
 export const PRICES = [
-  { photos: '6枚まで', price: '8,000円', layout: '1R・1K' },
-  { photos: '8枚', price: '10,000円', layout: '1LDK' },
-  { photos: '10枚', price: '12,000円', layout: '2LDK' },
-  { photos: '15枚', price: '17,000円', layout: '3LDK' },
-  { photos: '7枚目から', price: '1枚ごとに +1,000円', layout: '上限20枚。それ以上はご相談ください' },
+  { photos: `${PRICING.base_photos}枚まで`, price: yen(estimate(PRICING.base_photos)), layout: '1R・1K' },
+  { photos: '8枚', price: yen(estimate(8)), layout: '1LDK' },
+  { photos: '10枚', price: yen(estimate(10)), layout: '2LDK' },
+  { photos: '15枚', price: yen(estimate(15)), layout: '3LDK' },
+  { photos: `${PRICING.base_photos + 1}枚目から`, price: `1枚ごとに +${PRICING.per_extra_photo.toLocaleString('ja-JP')}円`, layout: `上限${PRICING.max_photos}枚。それ以上はご相談ください` },
 ];
 
 export const OPTIONS = [

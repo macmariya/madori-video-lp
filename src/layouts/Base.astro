@@ -2,6 +2,16 @@
 import '../styles/global.css';
 import { SITE } from '../data/site';
 
+interface Props {
+  title?: string;
+  description?: string;
+  path?: string;      // canonical に使う（例 '/contact/'）
+  noindex?: boolean;
+  jsonLd?: boolean;   // サービスの構造化データを出すか（トップだけ）
+}
+const { title = SITE.title, description = SITE.description, path = '/', noindex = false, jsonLd: withJsonLd = true } = Astro.props;
+const canonical = new URL(path, SITE.url).href;
+
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'Service',
@@ -29,25 +39,26 @@ const jsonLd = {
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{SITE.title}</title>
-    <meta name="description" content={SITE.description} />
-    <link rel="canonical" href={SITE.url} />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex" />}
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <meta name="theme-color" content="#1c283a" />
 
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="ja_JP" />
     <meta property="og:site_name" content={SITE.operator} />
-    <meta property="og:title" content={SITE.title} />
-    <meta property="og:description" content={SITE.description} />
-    <meta property="og:url" content={SITE.url} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
     <meta property="og:image" content={new URL('/ogp.jpg', SITE.url).href} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
 
-    <link rel="preload" as="image" href="/media/hero.jpg" fetchpriority="high" />
-    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+    <slot name="head" />
+    {withJsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
   </head>
   <body>
     <slot />

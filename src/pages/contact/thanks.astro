@@ -1,0 +1,29 @@
+---
+import Base from '../../layouts/Base.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+import SiteFooter from '../../components/SiteFooter.astro';
+import { SITE } from '../../data/site';
+---
+<Base title="送信が完了しました｜AI内覧動画" path="/contact/thanks/" noindex jsonLd={false}>
+  <SiteHeader cta={false} />
+  <main class="section form-page">
+    <div class="wrap wrap-narrow thanks">
+      <p class="eyebrow">送信が完了しました</p>
+      <h1 class="form-title">お問い合わせありがとうございます</h1>
+      <p class="thanks-id" hidden>受付番号 <strong id="inquiry-id"></strong></p>
+      <p>入力したメールアドレスに、受付番号と内容の控えをお送りしました。内容を確認のうえ、担当者から折り返しご連絡します。</p>
+      <p class="note">控えのメールが届かない場合は、迷惑メールのフォルダをご確認ください。それでも見つからない場合は、お手数ですが <a href={`mailto:${SITE.mail}`}>{SITE.mail}</a> までご連絡ください。</p>
+      <a class="btn btn-outline" href="/">AI内覧動画のトップへ戻る</a>
+    </div>
+  </main>
+  <SiteFooter />
+</Base>
+
+<script>
+  // 受付番号は形式が合うときだけ表示する
+  const id = new URLSearchParams(location.search).get('id') ?? '';
+  if (/^INQ-\d{8}-\d{3,}$/.test(id)) {
+    document.getElementById('inquiry-id')!.textContent = id;
+    document.querySelector<HTMLElement>('.thanks-id')!.hidden = false;
+  }
+</script>

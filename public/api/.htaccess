@@ -1,0 +1,4 @@
+# _ から始まる PHP（共通処理・設定の場所）とスキーマは Web から開けないようにする
+<FilesMatch "^(_.*|schema\.sql)$">
+  Require all denied
+</FilesMatch>

@@ -1,0 +1,247 @@
+---
+// 見積もり・相談の専用フォーム。送信先は public/api/inquiry.php（バリューサーバーの PHP）。
+// 項目の値は public/api/form.json の value をそのまま送り、DB の列（public/api/schema.sql）に対応させる。
+import Base from '../../layouts/Base.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+import SiteFooter from '../../components/SiteFooter.astro';
+import { SITE, FORM, PRICING, OPENING_PRICE_NOTE } from '../../data/site';
+
+const o = FORM.options;
+const lim = FORM.limits;
+// Turnstile のサイトキーは公開値。ビルド時に .env.deploy から渡す。無ければ Cloudflare の「常に通過する」テスト用キー
+const sitekey = import.meta.env.PUBLIC_TURNSTILE_SITEKEY || '1x00000000000000000000AA';
+---
+<Base
+  title="見積もり・相談のお申し込み｜AI内覧動画"
+  description="室内写真から作るAI内覧動画の、お見積り・ご相談のフォームです。写真の枚数を選ぶと料金の目安が出ます。"
+  path="/contact/"
+  jsonLd={false}
+>
+  <script slot="head" src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+  <SiteHeader cta={false} />
+
+  <main class="section form-page">
+    <div class="wrap wrap-narrow">
+      <p class="eyebrow">お見積り・ご相談（無料）</p>
+      <h1 class="form-title">見積もり・相談のお申し込み</h1>
+      <p class="form-lead">
+        物件と写真について分かる範囲でご記入ください。送信後、入力したメールアドレスに受付番号と内容の控えをお送りします。写真と間取り図は、こちらからのご連絡のあとにお送りいただきます。
+      </p>
+      <p class="form-required-note"><span class="req">必須</span> の項目は入力が必要です。</p>
+
+      <form class="inquiry" method="post" action="/api/inquiry.php" accept-charset="UTF-8">
+        <fieldset class="fs">
+          <legend>ご連絡先</legend>
+
+          <div class="field">
+            <label for="company_name">会社名・屋号 <span class="req">必須</span></label>
+            <input id="company_name" name="company_name" type="text" required maxlength={lim.company_name} autocomplete="organization" />
+          </div>
+
+          <div class="field">
+            <span class="label" id="customer_type-label">業種 <span class="req">必須</span></span>
+            <div class="choices" role="radiogroup" aria-labelledby="customer_type-label">
+              {o.customer_type.map((c) => (
+                <label class="choice"><input type="radio" name="customer_type" value={c.value} required /> {c.label}</label>
+              ))}
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="contact_name">ご担当者名 <span class="req">必須</span></label>
+            <input id="contact_name" name="contact_name" type="text" required maxlength={lim.contact_name} autocomplete="name" />
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label for="email">メールアドレス <span class="req">必須</span></label>
+              <input id="email" name="email" type="email" required maxlength={lim.email} autocomplete="email" inputmode="email" />
+            </div>
+            <div class="field">
+              <label for="phone">電話番号</label>
+              <input id="phone" name="phone" type="tel" maxlength={lim.phone} autocomplete="tel" inputmode="tel" pattern="[0-9+\-() ]{10,20}" placeholder="076-000-0000" />
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label for="prefecture">所在地（都道府県）</label>
+              <select id="prefecture" name="prefecture">
+                {o.prefecture.map((p) => <option value={p.value}>{p.label}</option>)}
+              </select>
+            </div>
+            <div class="field">
+              <span class="label" id="contact_preference-label">ご希望の連絡方法</span>
+              <div class="choices choices-inline" role="radiogroup" aria-labelledby="contact_preference-label">
+                {o.contact_preference.map((c, i) => (
+                  <label class="choice"><input type="radio" name="contact_preference" value={c.value} checked={i === 0} /> {c.label}</label>
+                ))}
+              </div>
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset class="fs">
+          <legend>物件と写真</legend>
+
+          <div class="field">
+            <span class="label" id="property_type-label">物件の種類 <span class="req">必須</span></span>
+            <div class="choices" role="radiogroup" aria-labelledby="property_type-label">
+              {o.property_type.map((c) => (
+                <label class="choice"><input type="radio" name="property_type" value={c.value} required /> {c.label}</label>
+              ))}
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="layout">間取り</label>
+            <input id="layout" name="layout" type="text" maxlength={lim.layout} placeholder="例: 3LDK" />
+          </div>
+
+          <div class="field">
+            <label for="photo_count">室内写真の枚数 <span class="req">必須</span></label>
+            <select id="photo_count" name="photo_count" required>
+              <option value="">選択してください</option>
+              {o.photo_count.map((c) => <option value={c.value}>{c.label}</option>)}
+            </select>
+            <p class="estimate" id="estimate" aria-live="polite">
+              写真の枚数を選ぶと、料金の目安が出ます。
+            </p>
+          </div>
+
+          <div class="field">
+            <span class="label" id="floorplan_type-label">間取り図 <span class="req">必須</span></span>
+            <div class="choices" role="radiogroup" aria-labelledby="floorplan_type-label">
+              {o.floorplan_type.map((c) => (
+                <label class="choice"><input type="radio" name="floorplan_type" value={c.value} required /> {c.label}</label>
+              ))}
+            </div>
+            <p class="hint">寸法の読める図面があると、条件の合う写真をカメラが前に進む映像にできます。図面が無くても料金は同じです。</p>
+          </div>
+
+          <div class="field">
+            <span class="label" id="photo_source-label">写真の状態</span>
+            <div class="choices" role="radiogroup" aria-labelledby="photo_source-label">
+              {o.photo_source.map((c) => (
+                <label class="choice"><input type="radio" name="photo_source" value={c.value} /> {c.label}</label>
+              ))}
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset class="fs">
+          <legend>ご希望</legend>
+
+          <div class="field">
+            <span class="label" id="usage-label">動画の使い道（複数選べます）</span>
+            <div class="choices choices-inline" role="group" aria-labelledby="usage-label">
+              {o.usage.map((c) => (
+                <label class="choice"><input type="checkbox" name="usage[]" value={c.value} /> {c.label}</label>
+              ))}
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="choice choice-solo"><input type="checkbox" name="wants_object_removal" value="1" /> 写真に写り込んだ物・私物の消去（オプション）を相談したい</label>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label for="desired_deadline">ご希望の納期</label>
+              <input id="desired_deadline" name="desired_deadline" type="date" />
+            </div>
+            <div class="field">
+              <label for="expected_volume">今後のご依頼の見込み</label>
+              <select id="expected_volume" name="expected_volume">
+                <option value="">選択してください</option>
+                {o.expected_volume.map((c) => <option value={c.value}>{c.label}</option>)}
+              </select>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="message">ご質問・ご要望</label>
+            <textarea id="message" name="message" rows="6" maxlength={lim.message} placeholder="特に見せたい部屋、使いたい場所（自社サイトの物件ページなど）があればお書きください"></textarea>
+          </div>
+        </fieldset>
+
+        <fieldset class="fs fs-consent">
+          <legend>個人情報の取り扱い</legend>
+          <div class="privacy">
+            <ul>
+              <li>ご入力いただいた内容は、お見積り・ご質問への回答、ご注文後の制作・納品・請求のご連絡、お取引の記録に使います。</li>
+              <li>法令に基づく場合を除き、ご本人の同意なく第三者に提供しません。</li>
+              <li>不正な送信を防ぐため、Cloudflare社のTurnstileを使って送信を確認します。送信元のIPアドレスは、元に戻せない形に変換して保存します。</li>
+              <li>ご自身の情報の開示・訂正・削除は、<a href={`mailto:${SITE.mail}`}>{SITE.mail}</a> までお申し出ください。</li>
+            </ul>
+            <p>このほかの取り扱いは<a href={SITE.policyUrl}>プライバシーポリシー</a>をご覧ください。</p>
+          </div>
+          <label class="choice choice-solo consent"><input type="checkbox" name="consent" value="1" required /> 個人情報の取り扱いに同意する <span class="req">必須</span></label>
+        </fieldset>
+
+        <!-- 迷惑送信の対策（人には見えない欄・開いた時刻・参照元） -->
+        <div class="hp" aria-hidden="true">
+          <label for="website">この欄は空のままにしてください</label>
+          <input id="website" name="website" type="text" tabindex="-1" autocomplete="off" />
+        </div>
+        <input type="hidden" name="started_at" value="" />
+        <input type="hidden" name="source_page" value="" />
+        <input type="hidden" name="referrer" value="" />
+        <input type="hidden" name="utm_source" value="" />
+        <input type="hidden" name="utm_medium" value="" />
+        <input type="hidden" name="utm_campaign" value="" />
+
+        <div class="cf-turnstile" data-sitekey={sitekey} data-language="ja"></div>
+
+        <button class="btn btn-accent btn-lg submit" type="submit">内容を送信する</button>
+        <p class="hint center">送信後、受付番号を表示し、同じ内容をメールでお送りします。</p>
+      </form>
+
+      <p class="note form-alt">
+        フォームが使えない場合は <a href={`mailto:${SITE.mail}`}>{SITE.mail}</a> へ、上の項目をメールでお送りください。ココナラからのご依頼は<a href={SITE.coconalaUrl}>ココナラのサービスページ</a>からどうぞ。
+      </p>
+    </div>
+  </main>
+
+  <SiteFooter />
+</Base>
+
+<script define:vars={{ pricing: PRICING, priceNote: OPENING_PRICE_NOTE }}>
+  const form = document.querySelector('form.inquiry');
+  const set = (name, value) => { const el = form.elements.namedItem(name); if (el) el.value = value; };
+  set('started_at', String(Date.now()));
+  set('source_page', location.pathname);
+  set('referrer', document.referrer.slice(0, 500));
+  const q = new URLSearchParams(location.search);
+  for (const k of ['utm_source', 'utm_medium', 'utm_campaign']) set(k, (q.get(k) || '').slice(0, 100));
+
+  // 料金の目安（PHP の estimate() と同じ式。form.json の pricing を使う）
+  const out = document.getElementById('estimate');
+  const sel = document.getElementById('photo_count');
+  const update = () => {
+    const v = sel.value;
+    if (v === '') { out.textContent = '写真の枚数を選ぶと、料金の目安が出ます。'; return; }
+    const n = /^\d+$/.test(v) ? Number(v) : null;
+    if (n === null || n > pricing.max_photos) {
+      out.textContent = `${pricing.max_photos}枚を超える場合や枚数が未定の場合は、内容を伺ってお見積りします。`;
+      return;
+    }
+    const yen = pricing.base_price + Math.max(0, n - pricing.base_photos) * pricing.per_extra_photo;
+    out.innerHTML = `料金の目安 <strong>${yen.toLocaleString('ja-JP')}円</strong>（税込・修正1回込み）<br><small>${priceNote}</small>`;
+  };
+  sel.addEventListener('change', update);
+  update();
+
+  // 二重送信を防ぐ
+  form.addEventListener('submit', () => {
+    const b = form.querySelector('button[type="submit"]');
+    b.disabled = true;
+    b.textContent = '送信しています…';
+  });
+  // 「戻る」で戻ったときにボタンを元に戻す
+  window.addEventListener('pageshow', () => {
+    const b = form.querySelector('button[type="submit"]');
+    b.disabled = false;
+    b.textContent = '内容を送信する';
+  });
+</script>

@@ -1,0 +1,18 @@
+---
+import { SITE } from '../data/site';
+// トップ以外のページでは、ページ内リンクをトップの節へ向ける
+interface Props { cta?: boolean }
+const { cta = true } = Astro.props;
+---
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="brand" href="/">AI内覧動画<span class="brand-sub">{SITE.operator}</span></a>
+    <nav class="header-nav" aria-label="サイト内">
+      <a href="/#examples">制作例</a>
+      <a href="/#price">料金</a>
+      <a href="/#flow">流れ</a>
+      <a href="/#faq">質問</a>
+    </nav>
+    {cta && <a class="btn btn-accent btn-sm" href={SITE.contactUrl}>見積もりを依頼</a>}
+  </div>
+</header>

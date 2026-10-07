@@ -354,3 +354,69 @@ ul, ol { margin: 0; padding: 0; }
   .mobile-cta.is-hidden { opacity: 0; translate: 0 20px; pointer-events: none; }
   .site-footer { padding-bottom: 96px; }
 }
+
+/* 見積もり・相談のフォーム */
+.form-page { background: var(--bg-tint); }
+.form-title { font-size: clamp(26px, 3.6vw, 34px); color: var(--navy); margin-bottom: 16px; }
+.form-lead { color: var(--muted); }
+.form-required-note { font-size: 14px; color: var(--muted); }
+.req {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 0 8px;
+  border-radius: 4px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.8;
+  vertical-align: 1px;
+}
+.inquiry { display: grid; gap: 24px; margin-top: 24px; }
+.fs { margin: 0; padding: 28px; border: 0; border-radius: var(--radius); background: #fff; display: grid; gap: 22px; }
+.fs legend { float: left; width: 100%; padding: 0 0 4px; font-size: 19px; font-weight: 800; color: var(--navy); border-bottom: 2px solid var(--line); }
+.fs legend + * { clear: both; }
+.field { display: grid; gap: 8px; min-width: 0; }
+.field > label, .field > .label { font-weight: 700; font-size: 15px; }
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+.inquiry input[type='text'], .inquiry input[type='email'], .inquiry input[type='tel'], .inquiry input[type='date'],
+.inquiry select, .inquiry textarea {
+  width: 100%;
+  min-height: 48px;
+  padding: 10px 14px;
+  border: 1.5px solid #cfc8bb;
+  border-radius: 8px;
+  background: #fff;
+  font: inherit;
+  font-size: 16px;
+  color: var(--text);
+}
+.inquiry textarea { min-height: 140px; resize: vertical; }
+.inquiry :is(input, select, textarea):focus-visible { outline: 3px solid rgb(232 120 40 / 0.35); border-color: var(--accent); }
+.choices { display: grid; gap: 8px; }
+.choices-inline { display: flex; flex-wrap: wrap; gap: 8px 18px; }
+.choice { display: flex; align-items: center; gap: 10px; font-weight: 500; cursor: pointer; }
+.choice input { width: 20px; height: 20px; accent-color: var(--accent); flex: none; margin: 0; }
+.choice-solo { font-weight: 600; }
+.hint { margin: 0; font-size: 13px; color: var(--muted); }
+.hint.center { text-align: center; }
+.estimate { margin: 4px 0 0; padding: 12px 16px; background: var(--bg-tint); border-radius: 8px; font-size: 15px; }
+.estimate strong { color: var(--accent-dark); font-size: 20px; }
+.estimate small { display: block; margin-top: 4px; color: var(--muted); font-size: 12px; }
+.privacy { font-size: 14px; color: var(--muted); }
+.privacy ul { padding-left: 1.2em; display: grid; gap: 6px; margin-bottom: 10px; }
+.privacy p { margin: 0; }
+.consent { padding: 14px 16px; background: var(--bg-tint); border-radius: 8px; }
+.hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+.cf-turnstile { justify-self: center; min-height: 65px; }
+.submit { justify-self: center; min-width: min(100%, 320px); }
+.submit:disabled { opacity: 0.6; cursor: wait; transform: none; }
+.form-alt { margin-top: 32px; }
+.thanks { text-align: center; }
+.thanks-id { font-size: 18px; background: #fff; display: inline-block; padding: 12px 24px; border-radius: 10px; }
+.thanks-id strong { color: var(--accent-dark); font-size: 22px; letter-spacing: 0.04em; }
+.thanks .btn { margin-top: 16px; }
+@media (max-width: 640px) {
+  .fs { padding: 22px 16px; }
+  .field-row { grid-template-columns: 1fr; }
+}

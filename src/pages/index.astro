@@ -1,23 +1,15 @@
 ---
 import Base from '../layouts/Base.astro';
 import YouTube from '../components/YouTube.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
 import {
   SITE, OPENING_PRICE_NOTE, MAIN_VIDEO, SIZE_VIDEOS, PRICES, OPTIONS, DELIVERABLES, FLOW, FAQ,
 } from '../data/site';
 ---
 <Base>
-  <header class="site-header">
-    <div class="wrap header-inner">
-      <a class="brand" href="/">AI内覧動画<span class="brand-sub">{SITE.operator}</span></a>
-      <nav class="header-nav" aria-label="ページ内">
-        <a href="#examples">制作例</a>
-        <a href="#price">料金</a>
-        <a href="#flow">流れ</a>
-        <a href="#faq">質問</a>
-      </nav>
-      <a class="btn btn-accent btn-sm" href="#contact">見積もりを依頼</a>
-    </div>
-  </header>
+  <link slot="head" rel="preload" as="image" href="/media/hero.jpg" fetchpriority="high" />
+  <SiteHeader />
 
   <main>
     <!-- ヒーロー -->
@@ -46,7 +38,7 @@ import {
           <li><span class="fact-k">対応</span><span class="fact-v">石川県から全国</span></li>
         </ul>
         <div class="hero-cta">
-          <a class="btn btn-accent" href="#contact">無料で見積もりを依頼する</a>
+          <a class="btn btn-accent" href={SITE.contactUrl}>無料で見積もりを依頼する</a>
           <a class="btn btn-ghost" href="#examples">制作例を見る</a>
         </div>
       </div>
@@ -298,7 +290,7 @@ import {
           <li>ご希望の納期</li>
         </ul>
         <div class="contact-cta">
-          <a class="btn btn-accent btn-lg" href={SITE.contactUrl}>お問い合わせフォームへ</a>
+          <a class="btn btn-accent btn-lg" href={SITE.contactUrl}>見積もり・相談のフォームへ</a>
           <p class="contact-mail">メール：<a href={`mailto:${SITE.mail}`}>{SITE.mail}</a></p>
         </div>
         <div class="coconala">
@@ -309,14 +301,9 @@ import {
     </section>
   </main>
 
-  <footer class="site-footer">
-    <div class="wrap footer-inner">
-      <p>運営者の経歴と事業の概要は<a href={SITE.businessUrl}>事業案内</a>をご覧ください。</p>
-      <p class="copyright">© 2026 {SITE.operator}</p>
-    </div>
-  </footer>
+  <SiteFooter />
 
-  <a class="mobile-cta btn btn-accent" href="#contact">無料で見積もりを依頼する</a>
+  <a class="mobile-cta btn btn-accent" href={SITE.contactUrl}>無料で見積もりを依頼する</a>
 </Base>
 
 <script>
