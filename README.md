@@ -6,6 +6,12 @@
 - 配信: バリューサーバー（WordPress の www.macmariya.com と同じサーバー）のサブドメイン。DNS は Cloudflare の `*.macmariya.com`（プロキシ ON・SSL は Full）で、追加の DNS 設定は要らない
 - 見積もり・相談は専用フォーム `/contact/`。送信は `public/api/inquiry.php`（PHP）がドキュメントルート外の SQLite に保存し、自分への通知とお客さまへの控え（受付番号つき）をメールで送る。写真の添付は受け付けない（2026-10-08 ユーザー決定）。DB の設計は `docs/schema.md`
 
+## 公開リポジトリについて
+
+ポートフォリオとして公開している。コードは参照用で、文章・画像・動画（`public/media/`・`public/ogp.jpg`）の再利用はできない。制作例の映像は AI で生成したもので、架空物件の図面と室内写真も AI 生成である。
+
+サーバーのホスト名・ユーザー名・パスは載せていない。実際の値はローカルの `.env.deploy`（gitignore）と `~/.ssh/config.d/valueserver.conf` にある。
+
 ## 文言の正本
 
 2026-10-08 から、サービス紹介の文言の正本はこのリポジトリ（`src/data/site.ts` と `src/pages/index.astro`）。
