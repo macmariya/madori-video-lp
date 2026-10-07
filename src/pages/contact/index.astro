@@ -192,7 +192,10 @@ const sitekey = import.meta.env.PUBLIC_TURNSTILE_SITEKEY || '1x00000000000000000
         <input type="hidden" name="utm_medium" value="" />
         <input type="hidden" name="utm_campaign" value="" />
 
-        <div class="cf-turnstile" data-sitekey={sitekey} data-language="ja"></div>
+        <div class="cf-turnstile" data-sitekey={sitekey} data-language="ja" data-callback="onTurnstileOk" data-error-callback="onTurnstileError" data-expired-callback="onTurnstileExpired"></div>
+        <p class="turnstile-help" id="turnstile-help" role="alert" hidden>
+          送信の確認（ボット対策）がうまくいきませんでした。ページを再読み込みするか、別のブラウザ（拡張機能を切った状態やプライベートウインドウ）でお試しください。それでも送れない場合は、お手数ですが <a href={`mailto:${SITE.mail}`}>{SITE.mail}</a> まで上の項目をメールでお送りください。
+        </p>
 
         <button class="btn btn-accent btn-lg submit" type="submit">内容を送信する</button>
         <p class="hint center">送信後、受付番号を表示し、同じ内容をメールでお送りします。</p>
@@ -232,6 +235,17 @@ const sitekey = import.meta.env.PUBLIC_TURNSTILE_SITEKEY || '1x00000000000000000
   };
   sel.addEventListener('change', update);
   update();
+
+  // Turnstile が失敗したときは、再読み込みとメールでの連絡を案内する（失敗の理由は閲覧環境によることが多い）
+  const help = document.getElementById('turnstile-help');
+  window.onTurnstileOk = () => { help.hidden = true; };
+  window.onTurnstileExpired = () => { help.hidden = true; };
+  window.onTurnstileError = (code) => {
+    help.hidden = false;
+    console.warn('Turnstile error', code);
+    // 既定の自動再試行に任せる（false を返すと Turnstile 側の表示も残る）
+    return false;
+  };
 
   // 二重送信を防ぐ
   form.addEventListener('submit', () => {
