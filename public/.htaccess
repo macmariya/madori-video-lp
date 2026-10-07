@@ -17,3 +17,8 @@
 </IfModule>
 Options -Indexes
 ErrorDocument 404 /404.html
+
+# データベース・SQL・メールの控えは Web から開けない（本来はドキュメントルートの外に置くので、置き間違えたときの備え）
+<FilesMatch "\.(sqlite|sqlite3|db|sql|eml|log)$">
+  Require all denied
+</FilesMatch>

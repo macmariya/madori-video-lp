@@ -4,7 +4,7 @@
 
 - Astro（静的出力）＋素の CSS。サーバーに Node は要らない
 - 配信: バリューサーバー（WordPress の www.macmariya.com と同じサーバー）のサブドメイン。DNS は Cloudflare の `*.macmariya.com`（プロキシ ON・SSL は Full）で、追加の DNS 設定は要らない
-- 問い合わせは WordPress の https://www.macmariya.com/contact に飛ばす（LP 側にフォームは持たない）
+- 見積もり・相談は専用フォーム `/contact/`。送信は `public/api/inquiry.php`（PHP）がドキュメントルート外の SQLite に保存し、自分への通知とお客さまへの控え（受付番号つき）をメールで送る。写真の添付は受け付けない（2026-10-08 ユーザー決定）。DB の設計は `docs/schema.md`
 
 ## 文言の正本
 
@@ -35,10 +35,22 @@ bash scripts/make_media.sh
 
 素材は架空物件（2LDK）の完成動画と入力写真。ヒーローだけはテロップを入れる前の生成クリップを NAS の素材 tar から取り出す。
 
+## フォームのローカル検証
+
+```bash
+bash scripts/serve_local.sh      # http://127.0.0.1:8080 （メールは .local/private/mail/ に .eml で書く）
+bash tests/inquiry_test.sh       # 別のターミナルで。DB を作り直して 16 項目を確かめる
+```
+
+PHP を直したら `public/api/` から `dist/api/` へ写すか、`serve_local.sh` を起動し直す（配信しているのは `dist/`）。
+
 ## デプロイ
+
+バリューサーバーの SSH は、コントロールパネル（お役立ちツール → SSH接続）で接続元の IP を登録した場合だけつながる。**登録は 30 日で切れる**ので、つながらないときはまず登録し直す（登録から約 5 分で有効）。鍵は `~/.ssh/valueserver_madori`、接続名は `~/.ssh/config` の `Host valueserver`。
 
 ```bash
 cp .env.deploy.example .env.deploy   # 接続情報を埋める（初回だけ）
+bash scripts/setup_private.sh        # 初回だけ。ドキュメントルートの外に config.php を作る
 ./deploy.sh --dry-run                # 差分だけ見る
 ./deploy.sh                          # 差分を見てから y で反映
 ```
