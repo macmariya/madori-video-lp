@@ -43,7 +43,7 @@ PUBLIC_TURNSTILE_SITEKEY="$PUBLIC_TURNSTILE_SITEKEY" npm run build
 printf "<?php\nreturn '%s';\n" "${PRIVATE_DIR%/}" > dist/api/_private_path.php
 grep -q "$PUBLIC_TURNSTILE_SITEKEY" dist/contact/index.html || { echo "Error: フォームにサイトキーが入っていません" >&2; exit 1; }
 
-RSYNC=(rsync -rlvz --checksum --delete --exclude '.DS_Store' -e "${SSH[*]}" dist/ "$REMOTE:$DEPLOY_PATH/")
+RSYNC=(rsync -rlvz --checksum --delete --exclude '.DS_Store' --exclude '.well-known/' -e "${SSH[*]}" dist/ "$REMOTE:$DEPLOY_PATH/")
 echo "== 差分（dry-run）"
 "${RSYNC[@]}" --dry-run
 [ "${1:-}" = "--dry-run" ] && exit 0
