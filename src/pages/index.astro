@@ -1,0 +1,355 @@
+---
+import Base from '../layouts/Base.astro';
+import YouTube from '../components/YouTube.astro';
+import {
+  SITE, OPENING_PRICE_NOTE, MAIN_VIDEO, SIZE_VIDEOS, PRICES, OPTIONS, DELIVERABLES, FLOW, FAQ,
+} from '../data/site';
+---
+<Base>
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">AI内覧動画<span class="brand-sub">{SITE.operator}</span></a>
+      <nav class="header-nav" aria-label="ページ内">
+        <a href="#examples">制作例</a>
+        <a href="#price">料金</a>
+        <a href="#flow">流れ</a>
+        <a href="#faq">質問</a>
+      </nav>
+      <a class="btn btn-accent btn-sm" href="#contact">見積もりを依頼</a>
+    </div>
+  </header>
+
+  <main>
+    <!-- ヒーロー -->
+    <section class="hero">
+      <video
+        class="hero-video"
+        src="/media/hero.mp4"
+        poster="/media/hero.jpg"
+        autoplay muted loop playsinline
+        preload="metadata"
+        aria-hidden="true"
+      ></video>
+      <div class="hero-shade"></div>
+      <div class="wrap hero-inner">
+        <p class="pill">不動産会社・工務店さま向け</p>
+        <h1 class="hero-title">
+          <span class="hero-title-sub">室内写真から作る</span>
+          AI内覧動画
+        </h1>
+        <p class="hero-lead">
+          お手持ちの室内写真から、写真1枚ごとにカメラがゆっくり寄る・振る・前に進む「内覧イメージ動画」をお作りします。動画の撮影に行かずに、物件紹介の動画を用意できます。
+        </p>
+        <ul class="hero-facts">
+          <li><span class="fact-k">料金</span><span class="fact-v">写真6枚まで 8,000円</span></li>
+          <li><span class="fact-k">納期</span><span class="fact-v">初稿まで 3営業日</span></li>
+          <li><span class="fact-k">対応</span><span class="fact-v">石川県から全国</span></li>
+        </ul>
+        <div class="hero-cta">
+          <a class="btn btn-accent" href="#contact">無料で見積もりを依頼する</a>
+          <a class="btn btn-ghost" href="#examples">制作例を見る</a>
+        </div>
+      </div>
+      <p class="ai-badge">AI生成映像</p>
+      <p class="hero-caption">映像は架空の物件（図面・室内写真もAIで生成）の制作例です</p>
+    </section>
+
+    <!-- 写真 → 映像 -->
+    <section class="section" id="how">
+      <div class="wrap">
+        <p class="eyebrow">写真が、そのまま内覧映像に</p>
+        <h2>写真1枚ごとに、約4秒の動く映像にします</h2>
+        <p class="section-lead">
+          写真の構図と、写っている物の形・数・位置を変えずに、実写に近い映像に仕上げます。左がお送りいただく写真、右が納品する映像の1カットです。
+        </p>
+
+        <div class="compare-list">
+          <figure class="compare">
+            <div class="compare-pair">
+              <div class="compare-item">
+                <span class="compare-tag">写真</span>
+                <img src="/media/photo-ldk.jpg" alt="LDKの室内写真。奥に壁付けのキッチン、手前に日の当たるフローリング" width="1280" height="853" loading="lazy" decoding="async" />
+              </div>
+              <span class="compare-arrow" aria-hidden="true"></span>
+              <div class="compare-item">
+                <span class="compare-tag compare-tag-accent">映像</span>
+                <video src="/media/compare-ldk.mp4" poster="/media/compare-ldk.jpg" muted loop playsinline preload="none" data-autoplay aria-label="同じLDKの写真から作った映像。キッチンに向かってゆっくり寄る"></video>
+              </div>
+            </div>
+            <figcaption>LDK：キッチンに向かってゆっくり寄る</figcaption>
+          </figure>
+
+          <figure class="compare">
+            <div class="compare-pair">
+              <div class="compare-item">
+                <span class="compare-tag">写真</span>
+                <img src="/media/photo-kitchen.jpg" alt="壁付けI型キッチンの室内写真。3口コンロとシンク、白い吊戸棚" width="1280" height="853" loading="lazy" decoding="async" />
+              </div>
+              <span class="compare-arrow" aria-hidden="true"></span>
+              <div class="compare-item">
+                <span class="compare-tag compare-tag-accent">映像</span>
+                <video src="/media/compare-kitchen.mp4" poster="/media/compare-kitchen.jpg" muted loop playsinline preload="none" data-autoplay aria-label="同じキッチンの写真から作った映像"></video>
+              </div>
+            </div>
+            <figcaption>キッチン：吊戸棚と3口コンロを見せる</figcaption>
+          </figure>
+        </div>
+        <p class="note">この比較は架空の物件で、写真もAIで作ったものです。お手持ちの実写の写真からも同じ手順で作りますが、写真の写り方（明るさ・ゆがみ・生活感）によって仕上がりは変わります。</p>
+      </div>
+    </section>
+
+    <!-- 制作例 -->
+    <section class="section section-tint" id="examples">
+      <div class="wrap">
+        <p class="eyebrow">制作例</p>
+        <h2>実際の住宅の写真15枚から作った例</h2>
+        <div class="main-example">
+          <YouTube video={MAIN_VIDEO} />
+          <div class="main-example-text">
+            <p class="example-label">{MAIN_VIDEO.label}</p>
+            <p class="example-meta">{MAIN_VIDEO.meta}</p>
+            <p>戸建ての1階の写真15枚を、約74秒の動画にまとめました。キッチンの流し・浴室・トイレの3カットは、カメラが前に進む映像です。各カットに部屋名のテロップ、冒頭と最後に撮影位置の番号つきの間取りカードを入れています。</p>
+          </div>
+        </div>
+
+        <h3 class="sub-heading">写真の枚数別の制作例</h3>
+        <p class="note note-strong">この3本は架空の物件で、間取り図と室内写真もAIで作ったものです。お手持ちの実写の写真からも同じ手順で作りますが、写真の写り方（明るさ・ゆがみ・生活感）によって仕上がりは変わります。</p>
+        <div class="size-grid">
+          {SIZE_VIDEOS.map((v) => (
+            <figure class="size-card">
+              <YouTube video={v} />
+              <figcaption><span class="example-label">{v.label}</span><span class="example-meta">{v.meta}・架空物件</span></figcaption>
+            </figure>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- 場面 -->
+    <section class="section" id="scenes">
+      <div class="wrap">
+        <p class="eyebrow">こんなときに</p>
+        <h2>このような場面でお使いいただけます</h2>
+        <ul class="scene-grid">
+          <li class="scene">
+            <span class="scene-num">01</span>
+            <p>写真はそろっているが、動画の撮影や編集をする時間と担当者がいない</p>
+          </li>
+          <li class="scene">
+            <span class="scene-num">02</span>
+            <p>自社サイトやSNS、店頭モニターで、静止画より目を留めてもらえる物件紹介を出したい</p>
+          </li>
+          <li class="scene">
+            <span class="scene-num">03</span>
+            <p>空室や遠方の物件で、撮影に行き直す手間をかけずに紹介動画を出したい</p>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- できること -->
+    <section class="section section-tint" id="features">
+      <div class="wrap">
+        <p class="eyebrow">できること</p>
+        <h2>写真の中身はそのままに、動きと案内を足します</h2>
+        <ul class="feature-list">
+          <li>
+            <h3>寄る・引く・振る</h3>
+            <p>写真1枚ごとに、約4秒の動く映像にします（寄る・引く・左右に振る・上下に振る）。</p>
+          </li>
+          <li>
+            <h3>写っている物を変えない</h3>
+            <p>写真の構図と、写っている物の形・数・位置を変えずに、実写に近い映像に仕上げます。</p>
+          </li>
+          <li>
+            <h3>前に進む映像</h3>
+            <p>寸法の読める間取り図をいただけた場合は、条件の合う写真をカメラが前に進む映像にします。写真によってはできないため、本数はお約束できません。料金は変わりません。</p>
+          </li>
+          <li>
+            <h3>部屋名と間取りカード</h3>
+            <p>各カットに部屋名のテロップを入れ、冒頭と最後に間取り図のカード（撮影位置の番号つき）を入れます。</p>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 料金 -->
+    <section class="section" id="price">
+      <div class="wrap">
+        <p class="eyebrow">料金</p>
+        <h2>料金は写真の枚数で決まります</h2>
+        <div class="price-cards">
+          {PRICES.slice(0, 4).map((p) => (
+            <div class="price-card">
+              <p class="price-layout">{p.layout}</p>
+              <p class="price-photos">写真{p.photos}</p>
+              <p class="price-yen">{p.price}</p>
+            </div>
+          ))}
+        </div>
+        <p class="price-extra"><span>{PRICES[4].photos}</span> {PRICES[4].price}（{PRICES[4].layout}）</p>
+        <ul class="check-list">
+          <li>修正1回（部屋名・順番・カードの文言、カットの動きの直し・撮り直し3カットまで）は料金に含まれます</li>
+          <li>寸法の読める間取り図がなく、すべて寄る・振る映像になる場合も、料金は同じです</li>
+        </ul>
+        <p class="price-note">{OPENING_PRICE_NOTE}</p>
+
+        <h3 class="sub-heading">オプション</h3>
+        <div class="table-wrap">
+          <table class="table">
+            <thead><tr><th scope="col">内容</th><th scope="col">料金</th></tr></thead>
+            <tbody>
+              {OPTIONS.map((o) => <tr><td>{o.name}</td><td>{o.price}</td></tr>)}
+            </tbody>
+          </table>
+        </div>
+        <p class="note">床材や敷物を別の物に描き替えるご要望は、広告での使い方を伺ってからお受けします。部屋を玄関から歩いて回る動画や、まだ建っていない住宅の完成イメージ動画は、内容を伺ってお見積りします。</p>
+
+        <h3 class="sub-heading">納品物</h3>
+        <dl class="spec">
+          {DELIVERABLES.map((d) => (<div class="spec-row"><dt>{d.k}</dt><dd>{d.v}</dd></div>))}
+        </dl>
+      </div>
+    </section>
+
+    <!-- 流れ -->
+    <section class="section section-tint" id="flow">
+      <div class="wrap">
+        <p class="eyebrow">制作の流れ</p>
+        <h2>資料を受け取ってから、5営業日以内の納品が目安です</h2>
+        <ol class="flow">
+          {FLOW.map((f, i) => (
+            <li class="flow-step">
+              <span class="flow-num">{i + 1}</span>
+              <div><h3>{f.title}</h3><p>{f.body}</p></div>
+            </li>
+          ))}
+        </ol>
+
+        <div class="prepare">
+          <h3>ご用意いただくもの</h3>
+          <ul class="check-list">
+            <li>各部屋の室内写真を1〜2枚（明るい時間に撮ったものが理想です。ポータルサイトの画面を写したものより、撮影した元の写真のほうが映像がくっきりします）</li>
+            <li>間取り図の画像（冒頭と最後のカードに使います。寸法が読める図面なら、前に進む映像にできる写真が増えます）</li>
+            <li>物件名と、特に見せたい部屋</li>
+          </ul>
+          <p class="note">私物や生活用品は、できるだけ片付けてから撮ってください。超広角で撮って直線が大きく曲がった写真は、前に進む映像にはできません（寄る・振る映像にはできます）。</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 注意・条件 -->
+    <section class="section" id="terms">
+      <div class="wrap">
+        <div class="caution">
+          <h2 class="caution-title">AIで生成した映像についてのご注意</h2>
+          <ul>
+            <li>映像はAIで生成したもので、実際に撮影したものではありません。写真をもとにしますが、色・質感・小物などの細部は実物と異なります</li>
+            <li>カメラが前に進む映像では、写真に写っていない所（物の陰や画面の端の外）をAIが描き足します。この部分は実物と違うことがあるので、初稿でご確認ください</li>
+            <li>寸法や設備の正確さを保証するものではありません。窓・扉・設備が実物どおりかは、納品時にお客さまにもご確認をお願いします</li>
+            <li>不動産広告でお使いの際も、画面右上の「AI生成映像」の表示は消さずにお使いください</li>
+          </ul>
+        </div>
+
+        <div class="terms-grid">
+          <div>
+            <h3>ご利用の条件</h3>
+            <ul class="dot-list">
+              <li>お送りいただく写真・間取り図は、ご依頼者さまが使用する権利をお持ちのもの（自社物件、施主さまの了承済みのものなど）に限ります</li>
+              <li>納品した動画は、ご依頼者さまの物件紹介（自社サイト・SNS・店頭）にお使いいただけます。再販売や素材としての配布はできません</li>
+              <li>納品した動画をAIの学習に使うことと、AI生成の表示を消して公開することはお控えください</li>
+            </ul>
+          </div>
+          <div>
+            <h3>お預かりする写真・図面の扱い</h3>
+            <p>映像の生成は、手元のPCで動かしている動画生成AI「MiniMax H3」で行います。写真・図面の読み取りと仕上がりの確認には、AIアシスタントを使います。</p>
+            <p>写真に写り込んだ物の消去（オプション）には外部の画像編集サービスを使うため、ご注文の前にご相談します。その場合も、施主さまのお名前や住所が分かる部分は消してから渡します。一部のカットを外部の動画生成サービスで仕上げたい場合も、その都度ご了承をいただいてから行います。</p>
+            <p>写真の読み取りと写り込みの消去に使うAIサービスは、学習に使わない設定で利用しています。</p>
+            <p>お預かりした写真・間取り図と制作データは、納品から30日後に削除します。納品した動画は、受け取り後にお手元で保存してください。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="section section-tint" id="faq">
+      <div class="wrap wrap-narrow">
+        <p class="eyebrow">FAQ</p>
+        <h2>よくあるご質問</h2>
+        <div class="faq">
+          {FAQ.map((f) => (
+            <details class="faq-item">
+              <summary>{f.q}</summary>
+              <p>{f.a}</p>
+            </details>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- お問い合わせ -->
+    <section class="section contact" id="contact">
+      <div class="wrap wrap-narrow">
+        <h2>お見積り・ご相談は無料です</h2>
+        <p>次の内容をお知らせいただけると、お返事が早くなります。</p>
+        <ul class="contact-points">
+          <li>物件の種類（戸建て・マンション・店舗など）と間取り</li>
+          <li>室内写真の枚数と、間取り図の種類（施工図・販売図面など）</li>
+          <li>ご希望の納期</li>
+        </ul>
+        <div class="contact-cta">
+          <a class="btn btn-accent btn-lg" href={SITE.contactUrl}>お問い合わせフォームへ</a>
+          <p class="contact-mail">メール：<a href={`mailto:${SITE.mail}`}>{SITE.mail}</a></p>
+        </div>
+        <div class="coconala">
+          <p>ココナラからもご依頼いただけます。お支払いとやり取りはココナラの中で行います。料金はこのページと同じです（別にココナラのサービス手数料がかかります）。</p>
+          <a class="btn btn-outline" href={SITE.coconalaUrl}>ココナラのサービスページへ</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <p>運営者の経歴と事業の概要は<a href={SITE.businessUrl}>事業案内</a>をご覧ください。</p>
+      <p class="copyright">© 2026 {SITE.operator}</p>
+    </div>
+  </footer>
+
+  <a class="mobile-cta btn btn-accent" href="#contact">無料で見積もりを依頼する</a>
+</Base>
+
+<script>
+  // 比較の映像は画面に入ったときだけ再生する。動きを減らす設定の閲覧者には自動再生しない
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const hero = document.querySelector<HTMLVideoElement>('.hero-video');
+  if (hero && reduce.matches) {
+    hero.pause();
+    hero.removeAttribute('autoplay');
+  }
+  const clips = document.querySelectorAll<HTMLVideoElement>('video[data-autoplay]');
+  if (!reduce.matches && 'IntersectionObserver' in window) {
+    const io = new IntersectionObserver((entries) => {
+      for (const e of entries) {
+        const v = e.target as HTMLVideoElement;
+        if (e.isIntersecting) v.play().catch(() => {});
+        else v.pause();
+      }
+    }, { threshold: 0.4 });
+    clips.forEach((v) => io.observe(v));
+  } else {
+    clips.forEach((v) => v.setAttribute('controls', ''));
+  }
+
+  // スマホの下部固定ボタンは、ヒーローと問い合わせ欄が見えている間は隠す
+  const cta = document.querySelector<HTMLElement>('.mobile-cta');
+  const watch = [document.querySelector('.hero'), document.querySelector('#contact')].filter(Boolean) as Element[];
+  if (cta && 'IntersectionObserver' in window) {
+    const visible = new Set<Element>();
+    const io2 = new IntersectionObserver((entries) => {
+      for (const e of entries) e.isIntersecting ? visible.add(e.target) : visible.delete(e.target);
+      cta.classList.toggle('is-hidden', visible.size > 0);
+    });
+    watch.forEach((el) => io2.observe(el));
+  }
+</script>

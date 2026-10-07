@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://madori.macmariya.com/sitemap.xml
