@@ -235,14 +235,16 @@ $notifyBody = "LP のフォームからお問い合わせがありました。\n
 $r = send_mail($config, $config['notify_to'], "【AI内覧動画】お問い合わせ {$publicId} {$companyName}", $notifyBody, $emailNorm);
 log_mail($pdo, $inquiryId, 'notify', $config['notify_to'], $r);
 
+// お客さまに見せる連絡先。差出人（mail_from）は送信専用のアドレスにできるので、返信先と署名はこちらを使う
+$contact = (string)($config['contact_email'] ?? 'info@macmariya.com');
 $replyBody = "{$companyName}\n{$contactName} 様\n\n"
     . "AI内覧動画のお問い合わせをいただき、ありがとうございます。\n"
     . "次の内容で受け付けました。内容を確認のうえ、担当者から折り返しご連絡します。\n\n"
     . "--------------------------------\n{$summary}\n--------------------------------\n\n"
     . "料金の目安は、室内写真の枚数から出したものです。正式な金額は、写真と間取り図を拝見してからお見積りします。\n"
     . "このメールにお心当たりがない場合は、お手数ですがこのまま破棄してください。\n\n"
-    . "マクマリ\n{$config['mail_from']}\nhttps://madori.macmariya.com/\n";
-$r = send_mail($config, $emailNorm, "【マクマリ】お問い合わせを受け付けました（受付番号 {$publicId}）", $replyBody, $config['notify_to']);
+    . "マクマリ\n{$contact}\nhttps://madori.macmariya.com/\n";
+$r = send_mail($config, $emailNorm, "【マクマリ】お問い合わせを受け付けました（受付番号 {$publicId}）", $replyBody, $contact);
 log_mail($pdo, $inquiryId, 'auto_reply', $emailNorm, $r);
 
 header('Cache-Control: no-store');

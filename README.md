@@ -63,6 +63,8 @@ bash scripts/setup_private.sh        # 初回だけ。ドキュメントルー�
 
 `DEPLOY_PATH` の末尾がサブドメイン用のフォルダでないとき、または上げ先に WordPress のファイルがあるときは止まる（`rsync --delete` で WordPress を消さないため）。
 
+メールの差出人は送信専用の `noreply@madori.macmariya.com`（バリューサーバーのドメインメール。DKIM はバリューサーバーで有効にし、鍵は Cloudflare の `default._domainkey.madori.macmariya.com`、SPF は `madori.macmariya.com` の TXT。2026-10-08）。`macmariya.com` 自体にはバリューサーバーのドメインメールを作らない（サーバー内で配送され、info@ への通知が Gmail に届かなくなるおそれがあるため）。お客さまへの返信先と署名は設定の `contact_email`。
+
 公開直後の確認（`scripts/setup_private.sh` が表示した合言葉を使う）:
 
 1. `https://madori.macmariya.com/api/check.php?token=…` で `pdo_sqlite`・`private_dir_writable` が true、`allow_url_fopen` か `curl` のどちらかが true、`db_under_docroot` が false。500 になるときは config.php の権限（PHP の実行ユーザーが読めるか）を疑う

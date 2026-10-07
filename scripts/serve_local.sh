@@ -14,7 +14,8 @@ cat > "$PRIV/config.php" <<PHP
 return [
     'db_path' => __DIR__ . '/madori.sqlite',
     'notify_to' => 'info@macmariya.com',
-    'mail_from' => 'info@macmariya.com',
+    'mail_from' => 'noreply@madori.macmariya.com',
+    'contact_email' => 'info@macmariya.com',
     'mail_from_name' => 'マクマリ',
     'mail_mode' => 'file',
     'turnstile_secret' => '$SECRET',

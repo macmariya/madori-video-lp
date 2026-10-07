@@ -5,9 +5,11 @@ return [
     // SQLite のファイル。PRIVATE_DIR の中に置く（ドキュメントルートの中に置かない）
     'db_path' => __DIR__ . '/madori.sqlite',
 
-    // 通知の宛先と差出人。差出人のドメインは SPF でバリューサーバーを許可している macmariya.com にする
+    // 通知の宛先と差出人。差出人は DKIM 署名のある送信専用アドレス（2026-10-08。バリューサーバーのドメインメールと
+    // Cloudflare の default._domainkey.madori・madori の SPF）。お客さまへの返信先と署名は contact_email
     'notify_to' => 'info@macmariya.com',
-    'mail_from' => 'info@macmariya.com',
+    'mail_from' => 'noreply@madori.macmariya.com',
+    'contact_email' => 'info@macmariya.com',
     'mail_from_name' => 'マクマリ',
     // mail: 送る / file: PRIVATE_DIR/mail/ に .eml として書く（ローカル検証用）
     'mail_mode' => 'mail',

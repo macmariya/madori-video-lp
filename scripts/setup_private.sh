@@ -22,7 +22,8 @@ TOKEN=$(openssl rand -hex 12)
 return [
     'db_path' => __DIR__ . '/madori.sqlite',
     'notify_to' => '${NOTIFY_TO:-info@macmariya.com}',
-    'mail_from' => 'info@macmariya.com',
+    'mail_from' => 'noreply@madori.macmariya.com',
+    'contact_email' => 'info@macmariya.com',
     'mail_from_name' => 'マクマリ',
     'mail_mode' => 'mail',
     'turnstile_secret' => '${TURNSTILE_SECRET}',
