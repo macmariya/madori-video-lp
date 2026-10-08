@@ -3,6 +3,7 @@
 // 10_Content/Pages/間取り図AI内覧動画.md（WordPress 固定ページ 2055）と 31_Project/間取り図動画/60_Sales/出品文案.md。
 // 価格の書き方は景品表示法の決まり（blog-vault 31_Project/間取り図動画/01_マネタイズ設計.md §1.7）に従う。
 // 「今だけ」「期間限定」「先着」「お得」「○% オフ」「通常 ○円」は書かない。
+// 値上げ・改定の予告と「オープニング価格」も書かない（2026-10-08、ココナラが期限を書かない値上げ予告を景品表示法違反として出品を取り下げたため）。
 
 import form from '../../public/api/form.json';
 
@@ -10,7 +11,7 @@ export const SITE = {
   url: 'https://madori.macmariya.com/',
   title: '室内写真から作るAI内覧動画｜不動産会社・工務店さま向け',
   description:
-    'お手持ちの室内写真から、写真1枚ごとにカメラがゆっくり寄る・振る・前に進むAI内覧動画を制作します。不動産会社・工務店向け。料金は写真の枚数で決まり、6枚まで8,000円（オープニング価格）、初稿は3営業日。石川県から全国に対応します。',
+    'お手持ちの室内写真から、写真1枚ごとにカメラがゆっくり寄る・振る・前に進むAI内覧動画を制作します。不動産会社・工務店向け。料金は写真の枚数で決まり、6枚まで8,000円、初稿は3営業日。石川県から全国に対応します。',
   contactUrl: '/contact/',
   mail: 'info@macmariya.com',
   coconalaUrl: 'https://coconala.com/services/4440820',
@@ -28,9 +29,6 @@ export function estimate(photos: number | null): number | null {
   return PRICING.base_price + Math.max(0, photos - PRICING.base_photos) * PRICING.per_extra_photo;
 }
 const yen = (n: number | null) => (n === null ? '' : `${n.toLocaleString('ja-JP')}円`);
-
-export const OPENING_PRICE_NOTE =
-  'オープニング価格です。実績が増えたら改定します（時期は未定です）。ご注文後に料金が変わることはありません。';
 
 export type Video = {
   id: string;

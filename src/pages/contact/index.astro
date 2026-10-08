@@ -4,7 +4,7 @@
 import Base from '../../layouts/Base.astro';
 import SiteHeader from '../../components/SiteHeader.astro';
 import SiteFooter from '../../components/SiteFooter.astro';
-import { SITE, FORM, PRICING, OPENING_PRICE_NOTE } from '../../data/site';
+import { SITE, FORM, PRICING } from '../../data/site';
 
 const o = FORM.options;
 const lim = FORM.limits;
@@ -210,7 +210,7 @@ const sitekey = import.meta.env.PUBLIC_TURNSTILE_SITEKEY || '1x00000000000000000
   <SiteFooter />
 </Base>
 
-<script define:vars={{ pricing: PRICING, priceNote: OPENING_PRICE_NOTE }}>
+<script define:vars={{ pricing: PRICING }}>
   const form = document.querySelector('form.inquiry');
   const set = (name, value) => { const el = form.elements.namedItem(name); if (el) el.value = value; };
   set('started_at', String(Date.now()));
@@ -231,7 +231,7 @@ const sitekey = import.meta.env.PUBLIC_TURNSTILE_SITEKEY || '1x00000000000000000
       return;
     }
     const yen = pricing.base_price + Math.max(0, n - pricing.base_photos) * pricing.per_extra_photo;
-    out.innerHTML = `料金の目安 <strong>${yen.toLocaleString('ja-JP')}円</strong>（修正1回込み）<br><small>${priceNote}</small>`;
+    out.innerHTML = `料金の目安 <strong>${yen.toLocaleString('ja-JP')}円</strong>（修正1回込み）`;
   };
   sel.addEventListener('change', update);
   update();

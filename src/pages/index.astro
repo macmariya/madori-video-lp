@@ -4,7 +4,7 @@ import YouTube from '../components/YouTube.astro';
 import SiteHeader from '../components/SiteHeader.astro';
 import SiteFooter from '../components/SiteFooter.astro';
 import {
-  SITE, OPENING_PRICE_NOTE, MAIN_VIDEO, SIZE_VIDEOS, PRICES, OPTIONS, DELIVERABLES, FLOW, FAQ,
+  SITE, MAIN_VIDEO, SIZE_VIDEOS, PRICES, OPTIONS, DELIVERABLES, FLOW, FAQ,
 } from '../data/site';
 ---
 <Base>
@@ -52,7 +52,7 @@ import {
         <p class="eyebrow">写真が、そのまま内覧映像に</p>
         <h2>写真1枚ごとに、約4秒の動く映像にします</h2>
         <p class="section-lead">
-          写真の構図と、写っている物の形・数・位置を変えずに、実写に近い映像に仕上げます。左がお送りいただく写真、右が納品する映像の1カットです。
+          写真の構図と、写っている物の形・数・位置をできるだけ保ったまま、映像にします。左がお送りいただく写真、右が納品する映像の1カットです。
         </p>
 
         <div class="compare-list">
@@ -150,8 +150,8 @@ import {
             <p>写真1枚ごとに、約4秒の動く映像にします（寄る・引く・左右に振る・上下に振る）。</p>
           </li>
           <li>
-            <h3>写っている物を変えない</h3>
-            <p>写真の構図と、写っている物の形・数・位置を変えずに、実写に近い映像に仕上げます。</p>
+            <h3>写っている物をできるだけそのままに</h3>
+            <p>写真の構図と、写っている物の形・数・位置をできるだけ保ったまま、映像にします。</p>
           </li>
           <li>
             <h3>前に進む映像</h3>
@@ -184,7 +184,6 @@ import {
           <li>修正1回（部屋名・順番・カードの文言、カットの動きの直し・撮り直し3カットまで）は料金に含まれます</li>
           <li>寸法の読める間取り図がなく、すべて寄る・振る映像になる場合も、料金は同じです</li>
         </ul>
-        <p class="price-note">{OPENING_PRICE_NOTE}</p>
 
         <h3 class="sub-heading">オプション</h3>
         <div class="table-wrap">

@@ -230,7 +230,6 @@ ul, ol { margin: 0; padding: 0; }
 .price-yen { font-size: 30px; font-weight: 900; color: var(--accent-dark); margin: 0; letter-spacing: 0; }
 .price-extra { margin: 18px 0 20px; text-align: center; }
 .price-extra span { font-weight: 700; color: var(--navy); }
-.price-note { margin-top: 20px; padding: 14px 18px; background: var(--bg-tint); border-radius: 8px; font-size: 14px; }
 @media (max-width: 760px) { .price-cards { grid-template-columns: repeat(2, 1fr); } .price-yen { font-size: 24px; } }
 
 .check-list { list-style: none; display: grid; gap: 8px; }
