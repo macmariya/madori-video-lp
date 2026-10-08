@@ -1,6 +1,8 @@
 # 問い合わせ・受注データベースの設計
 
-フォーム（`/contact/`）の送信は `public/api/inquiry.php` が SQLite（サーバーの `PRIVATE_DIR/madori.sqlite`）に保存する。テーブル定義の正本は `public/api/schema.sql`、選択肢の値と表示名・料金の計算は `public/api/form.json`。SQLite の方言だけで書いてあるので、Cloudflare D1 へはダンプをそのまま流して移せる。
+フォーム（`/contact/`）の送信は `public/api/inquiry.php` が SQLite（サーバーの `PRIVATE_DIR/madori.sqlite`）に保存する。
+
+> **2026-10-08 から、受注と制作の進捗の正本は自宅の NAS の受注管理アプリ（別リポジトリ `madori-orders`、非公開）に移した。** このサーバーの DB は問い合わせの受け付けと、その状態の写しだけを持つ。下の `orders` テーブルは使っていない（テーブルは残してある）。同期のしかたは末尾の「受注管理アプリとの同期」。テーブル定義の正本は `public/api/schema.sql`、選択肢の値と表示名・料金の計算は `public/api/form.json`。SQLite の方言だけで書いてあるので、Cloudflare D1 へはダンプをそのまま流して移せる。
 
 ## テーブルの関係
 
@@ -85,6 +87,15 @@ WHERE data_deleted_at IS NULL AND data_delete_due <= date('now', '+9 hours');
 -- ssh valueserver "sqlite3 ~/madori-private/madori.sqlite '.backup /tmp/madori.bak'" && scp valueserver:/tmp/madori.bak .
 ```
 
+## 受注管理アプリとの同期（2026-10-08）
+
+NAS の受注管理アプリが `public/api/sync.php` を 5 分ごとに呼ぶ。合言葉は設定の `sync_token`（ヘッダー `X-Sync-Token`。空・不一致なら 404）。
+
+- `GET ?since=<日時>`: その日時以降に更新された問い合わせ（顧客の写しを含む。`ip_hash`・`user_agent` は渡さない）、残っている全受付番号、選択肢の表示名（`form.json` の `options`）を返す。NAS は全受付番号に無い問い合わせを写しから消す（`_purge.php` の 1 年の削除を NAS にも効かせる）
+- `POST {"public_id","to","at",…}`: 問い合わせの状態を変える（返信・見積・受注・見送り）。**状態の正本は NAS** で、ここは写し。同じ状態への変更は何もせず 200 を返す（NAS の送り直しで二重にしない）。状態の流れは上の図と同じで、見送り（lost）からは再開できる
+- **受注は NAS にしかないので、`_purge.php` が受注になった問い合わせを残せるのは `status = 'won'` だけによる。** NAS は受注を作るときに必ず won を送り、届くまで送り直す
+- 試験: `bash scripts/serve_local.sh` を起動して `bash tests/sync_test.sh`（20 項目）
+
 ## blog-vault の案件台帳との関係
 
-`31_Project/間取り図動画/60_Sales/案件台帳.md` は Vault に置くため、顧客名・連絡先を書かない決まりがある。顧客の情報はこの DB だけに置き、台帳とは `orders.slug` でつなぐ。台帳の列（経路・受注日・写真枚数・金額・オプション・セッション ID・納品日・削除予定日・削除日）は `orders` の列にすべて対応させてある。
+`31_Project/間取り図動画/60_Sales/案件台帳.md`（Vault）は 2026-10-08 に受注管理アプリへ置き換えた。顧客の情報を Vault に置かない決まりは変わらない（このサーバーと NAS のアプリにだけある）。

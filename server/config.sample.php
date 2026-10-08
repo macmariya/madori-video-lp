@@ -25,4 +25,8 @@ return [
 
     // api/check.php を開くための合言葉。確かめ終わったら空にする
     'check_token' => '',
+
+    // 受注管理アプリ（NAS の madori-orders）が api/sync.php を呼ぶときの合言葉。32 文字以上（openssl rand -hex 32）。
+    // 空にすると sync.php は 404 を返す。NAS 側の .env の SERVER_SYNC_TOKEN と同じ値にする
+    'sync_token' => '',
 ];

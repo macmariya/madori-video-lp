@@ -16,6 +16,7 @@ if "${SSH[@]}" "$REMOTE" "test -f '$PRIVATE_DIR/config.php'"; then
 fi
 SALT=$(openssl rand -hex 16)
 TOKEN=$(openssl rand -hex 12)
+SYNC_TOKEN=$(openssl rand -hex 32)
 "${SSH[@]}" "$REMOTE" "umask 077; mkdir -p '$PRIVATE_DIR' && cat > '$PRIVATE_DIR/config.php'" <<PHP
 <?php
 // scripts/setup_private.sh が $(date +%Y-%m-%d) に作成。書式は server/config.sample.php
@@ -30,6 +31,7 @@ return [
     'ip_salt' => '${SALT}',
     'allowed_origins' => ['https://madori.macmariya.com'],
     'check_token' => '${TOKEN}',
+    'sync_token' => '${SYNC_TOKEN}',
 ];
 PHP
 "${SSH[@]}" "$REMOTE" "ls -la '$PRIVATE_DIR'"

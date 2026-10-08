@@ -22,6 +22,7 @@ return [
     'ip_salt' => 'local-test-salt',
     'allowed_origins' => ['http://127.0.0.1:$PORT', 'http://localhost:$PORT'],
     'check_token' => 'local',
+    'sync_token' => '${SYNC_TOKEN:-local-sync-token-0123456789abcdef0123}',
 ];
 PHP
 npm run build >/dev/null

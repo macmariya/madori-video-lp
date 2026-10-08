@@ -6,6 +6,12 @@
 - 配信: バリューサーバー（WordPress の www.macmariya.com と同じサーバー）のサブドメイン。DNS は Cloudflare の `*.macmariya.com`（プロキシ ON・SSL は Full）で、追加の DNS 設定は要らない
 - 見積もり・相談は専用フォーム `/contact/`。送信は `public/api/inquiry.php`（PHP）がドキュメントルート外の SQLite に保存し、自分への通知とお客さまへの控え（受付番号つき）をメールで送る。写真の添付は受け付けない（2026-10-08 ユーザー決定）。DB の設計は `docs/schema.md`
 
+## 受注管理アプリとの同期
+
+受注と制作の進捗は、自宅の NAS で動く別のアプリ（非公開）で管理している。そのアプリが `public/api/sync.php` で問い合わせを取り込み、問い合わせの状態（返信・見積・受注・見送り）を書き戻す。仕組みは `docs/schema.md` の「受注管理アプリとの同期」。
+
+サーバーの `config.php` に合言葉 `sync_token`（`openssl rand -hex 32`。アプリ側の `SERVER_SYNC_TOKEN` と同じ値）を入れる。`scripts/setup_private.sh` は新しく作るときだけ入れるので、既にある `config.php` にはサーバー上で 1 行足す（2026-10-08 に足した）。空なら `sync.php` は 404 を返す。
+
 ## 公開リポジトリについて
 
 ポートフォリオとして公開している。コードは参照用で、文章・画像・動画（`public/media/`・`public/ogp.jpg`）の再利用はできない。制作例の映像は AI で生成したもので、架空物件の図面と室内写真も AI 生成である。
@@ -46,6 +52,7 @@ bash scripts/make_media.sh
 ```bash
 bash scripts/serve_local.sh      # http://127.0.0.1:8080 （メールは .local/private/mail/ に .eml で書く）
 bash tests/inquiry_test.sh       # 別のターミナルで。DB を作り直して 16 項目を確かめる
+bash tests/sync_test.sh          # 受注管理アプリとの同期口（20 項目）
 ```
 
 PHP を直したら `public/api/` から `dist/api/` へ写すか、`serve_local.sh` を起動し直す（配信しているのは `dist/`）。
