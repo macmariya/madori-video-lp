@@ -48,6 +48,7 @@ poster "$SRC/50_Deliverables/20261006_自宅/20261006_自宅_移動なし.mp4" 3
 poster "$SRC/50_Deliverables/20261006_架空1K/20261006_架空1K_移動なし.mp4" 27 yt-1k
 poster "$SRC/50_Deliverables/20261006_架空1LDK/20261006_架空1LDK_移動なし.mp4" 12 yt-1ldk
 poster "$V2LDK" 15.5 yt-2ldk
+poster "$SRC/50_Deliverables/20261009_架空1K移動あり/20261009_架空1K移動あり_一筆書き.mp4" 38 yt-walk-1k   # 玄関から歩いて回る版（2026-10-10）。キッチンに正対するコマ
 
 ls -la "$OUT"
 

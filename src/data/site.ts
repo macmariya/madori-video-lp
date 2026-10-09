@@ -52,6 +52,15 @@ export const SIZE_VIDEOS: Video[] = [
   { id: 'EgjMTAC_zOI', title: '2LDK・写真10枚の制作例（架空物件）', label: '2LDK・写真10枚', meta: '約53秒', poster: '/media/yt-2ldk.jpg' },
 ];
 
+// 玄関から歩いて回る版（walk）。料金は載せず、お見積りにする（2026-10-10 ユーザー決定。実績を積んでから価格を決める）
+export const WALK_VIDEO: Video = {
+  id: '2WTRCgJ0Acw',
+  title: '玄関から歩いて回る動画の制作例（1K・架空物件）',
+  label: '1K・玄関から歩いて回る動画',
+  meta: '約67秒・写真6枚と寸法の読める間取り図から',
+  poster: '/media/yt-walk-1k.jpg',
+};
+
 export const PRICES = [
   { photos: `${PRICING.base_photos}枚まで`, price: yen(estimate(PRICING.base_photos)), layout: '1R・1K' },
   { photos: '8枚', price: yen(estimate(8)), layout: '1LDK' },
@@ -92,6 +101,10 @@ export const FAQ = [
   {
     q: '写真が無い部屋はどうなりますか',
     a: '写真1枚ごとに映像を作るので、写真が無い部屋は動画に入りません。入れたい部屋があれば、その部屋の写真を追加でお送りください。',
+  },
+  {
+    q: '玄関から部屋を歩いて回る動画も作れますか',
+    a: '作れます。寸法の読める間取り図から部屋の立体を起こし、玄関から順に歩いて回る一続きの映像にします（制作例の欄に1Kの例があります）。写真に写っていない眺めをAIが描くため、写真1枚ごとの映像より細部が写真と違いやすく、確認の回数も増えます。料金は間取りと動画の長さを伺い、お見積りします。',
   },
   {
     q: '石川県外からも依頼できますか',

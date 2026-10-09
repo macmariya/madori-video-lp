@@ -4,7 +4,7 @@ import YouTube from '../components/YouTube.astro';
 import SiteHeader from '../components/SiteHeader.astro';
 import SiteFooter from '../components/SiteFooter.astro';
 import {
-  SITE, MAIN_VIDEO, SIZE_VIDEOS, PRICES, OPTIONS, DELIVERABLES, FLOW, FAQ,
+  SITE, MAIN_VIDEO, SIZE_VIDEOS, WALK_VIDEO, PRICES, OPTIONS, DELIVERABLES, FLOW, FAQ,
 } from '../data/site';
 ---
 <Base>
@@ -113,6 +113,17 @@ import {
               <figcaption><span class="example-label">{v.label}</span><span class="example-meta">{v.meta}・架空物件</span></figcaption>
             </figure>
           ))}
+        </div>
+
+        <h3 class="sub-heading">玄関から歩いて回る動画（お見積り）</h3>
+        <p class="note note-strong">この動画も架空の物件で、間取り図と室内写真もAIで作ったものです。</p>
+        <div class="main-example">
+          <YouTube video={WALK_VIDEO} />
+          <div class="main-example-text">
+            <p class="example-label">{WALK_VIDEO.label}</p>
+            <p class="example-meta">{WALK_VIDEO.meta}・架空物件</p>
+            <p>寸法の読める間取り図から部屋の立体を起こし、玄関から洗面室・浴室・キッチン・トイレ・洋室へ、一続きに歩いて回る映像にします。写真に写っていない壁や建具は、間取り図をもとにAIが描きます。そのため写真1枚ごとの映像より写真と違う所が出やすく、確認の回数も増えます。料金は間取りと動画の長さを伺ってお見積りします。</p>
+          </div>
         </div>
       </div>
     </section>
