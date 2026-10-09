@@ -12,6 +12,7 @@ customers 1 ─── n inquiries 1 ─── 0..1 orders
     └──────────── n orders ─────────────┘   （ココナラ経由など、問い合わせを経ない受注は inquiry_id が NULL）
 
 status_events: inquiries / orders の状態が変わるたびに 1 行（entity_type + entity_id で指す）
+id_sequences:  採番のカウンター（日ごとに最後に出した番号。行を消しても戻さない）
 mail_log:      送ったメール（notify = 自分への通知 / auto_reply = お客さまへの控え）
 submission_log: フォームの送信 1 回ごとの結果（受け付けなかった送信も含む）
 ```
@@ -39,6 +40,12 @@ ordered → materials_received → in_production → first_draft_sent → revisi
 ```
 
 状態を変えるときは、親テーブルの `status` と日時の列を更新し、同じトランザクションで `status_events` に 1 行足す。
+
+## 採番（2026-10-09 改修）
+
+受付番号 `INQ-YYYYMMDD-NNN` は、`id_sequences`（prefix・day・last）に日ごとの最後の番号を持って `last + 1` を出す。**問い合わせの行を消しても番号は戻らない**ので、同じ番号が二度出ることはない。カウンターが無い日（表を作る前のデータ）は、その日の既存の番号の最大値から続ける。
+
+改修前は「その日の行数＋1」で数えていたため、行を消すと次の送信が消した番号をもう一度使っていた（2026-10-08 の試験で、試験の行を消すたびに INQ-20261008-001 が出た）。NAS の受注管理アプリの受注番号 `ORD-` も同じ作りに直した。
 
 ## 決めごと
 
@@ -82,6 +89,9 @@ COMMIT;
 -- 削除予定日を過ぎて、まだ消していない案件
 SELECT public_id, slug, delivered_at, data_delete_due FROM orders
 WHERE data_deleted_at IS NULL AND data_delete_due <= date('now', '+9 hours');
+
+-- 試験の後片付け（この 5 表だけ消す。id_sequences と schema_migrations は消さない。sqlite_sequence も触らない）
+-- BEGIN; DELETE FROM status_events; DELETE FROM mail_log; DELETE FROM inquiries; DELETE FROM customers; DELETE FROM submission_log; COMMIT;
 
 -- バックアップ（手元へ）
 -- ssh valueserver "sqlite3 ~/madori-private/madori.sqlite '.backup /tmp/madori.bak'" && scp valueserver:/tmp/madori.bak .

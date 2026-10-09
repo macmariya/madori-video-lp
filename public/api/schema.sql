@@ -142,3 +142,12 @@ CREATE TABLE IF NOT EXISTS submission_log (
   created_at  TEXT NOT NULL
 );
 CREATE INDEX IF NOT EXISTS idx_submission_log_ip ON submission_log(ip_hash, created_at);
+
+-- 採番のカウンター（2026-10-09 追加。schema_migrations の版 2）。日ごとに最後に出した番号を持つ。
+-- 問い合わせや受注の行を消しても戻さない（同じ受付番号・受注番号を二度出さないため）。試験の後片付けでも消さない
+CREATE TABLE IF NOT EXISTS id_sequences (
+  prefix  TEXT NOT NULL,                                -- INQ / ORD
+  day     TEXT NOT NULL,                                -- YYYYMMDD（日本時間）
+  last    INTEGER NOT NULL,
+  PRIMARY KEY (prefix, day)
+);

@@ -82,4 +82,4 @@ bash scripts/setup_private.sh        # 初回だけ。ドキュメントルー�
 
 1. `https://madori.macmariya.com/api/check.php?token=…` で `pdo_sqlite`・`private_dir_writable` が true、`allow_url_fopen` か `curl` のどちらかが true、`db_under_docroot` が false。500 になるときは config.php の権限（PHP の実行ユーザーが読めるか）を疑う
 2. 自分宛てにフォームから 1 件送り、通知と控えの両方が届くこと、Gmail の「メッセージのソースを表示」で SPF が PASS であることを確かめる
-3. 確かめたら config.php の `check_token` を空にし、試験の行を DB から消す
+3. 確かめたら config.php の `check_token` を空にし、試験の行を DB から消す（消し方は `docs/schema.md` の「試験の後片付け」。`id_sequences` は消さない。消すと受付番号が出し直しになる）

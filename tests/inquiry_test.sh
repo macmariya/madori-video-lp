@@ -29,10 +29,14 @@ r=$(post "${valid[@]}" -H "Origin: https://evil.example"); check "他サイト�
 now=$(( $(date +%s) * 1000 )); r=$(post "${valid[@]}" --data-urlencode started_at=$now); check "開いて 3 秒未満は 400" "${r%% *}" "400"
 r=$(curl -s -X POST "$BASE/api/inquiry.php" --data-urlencode company_name=x --data-urlencode email=bad --data-urlencode started_at=$old --data-urlencode cf-turnstile-response=XXXX.DUMMY.TOKEN)
 check "入力の誤りは理由を返す" "$(echo "$r" | grep -o -e 'メールアドレスの形式' -e '業種を選んで' -e '同意のうえ' | wc -l | tr -d ' ')" "3"
-r=$(post "${valid[@]}"); check "入力の誤りは回数に数えない（4 回目の受け付けは通る）" "$r" "303 $BASE/contact/thanks/?id=INQ-$(date +%Y%m%d)-003"
+# 行を消しても番号を出し直さない（002 を消してから送っても 003 になる）
+q "DELETE FROM status_events WHERE entity_type='inquiry' AND entity_id=2; DELETE FROM mail_log WHERE inquiry_id=2; DELETE FROM inquiries WHERE id=2;"
+r=$(post "${valid[@]}"); check "入力の誤りは回数に数えない・消した番号は出し直さない（003）" "$r" "303 $BASE/contact/thanks/?id=INQ-$(date +%Y%m%d)-003"
+check "採番のカウンターは 3" "$(q "SELECT last FROM id_sequences WHERE prefix='INQ' AND day='$(date +%Y%m%d)'")" "3"
+check "スキーマの版は 2" "$(q "SELECT MAX(version) FROM schema_migrations")" "2"
 r=$(post "${valid[@]}"); check "受け付け・迷惑送信の疑いが 1 時間に 5 回に達すると 429" "${r%% *}" "429"
 check "記録の内訳" "$(q "SELECT group_concat(result, ',') FROM (SELECT result FROM submission_log ORDER BY id)")" "ok,ok,honeypot,invalid,too_fast,invalid,ok,rate_limited"
-check "メールは 3 件 × 2 通" "$(ls .local/private/mail/*.eml | wc -l | tr -d ' ')" "6"
-check "状態の履歴は問い合わせ 3 件ぶん" "$(q "SELECT COUNT(*) FROM status_events WHERE to_status='new'")" "3"
+check "メールは 3 件 × 2 通（消した 1 件の .eml は残る）" "$(ls .local/private/mail/*.eml | wc -l | tr -d ' ')" "6"
+check "状態の履歴は残っている問い合わせ 2 件ぶん" "$(q "SELECT COUNT(*) FROM status_events WHERE to_status='new'")" "2"
 echo "pass=$pass fail=$fail"
 [ "$fail" -eq 0 ]

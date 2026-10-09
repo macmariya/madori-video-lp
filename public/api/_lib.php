@@ -6,7 +6,7 @@ declare(strict_types=1);
 date_default_timezone_set('Asia/Tokyo');
 mb_internal_encoding('UTF-8');
 
-const SCHEMA_VERSION = 1;
+const SCHEMA_VERSION = 2;  // 2: id_sequences（2026-10-09）
 
 /** ドキュメントルートの外に置いた設定を読む。場所は deploy.sh が書く _private_path.php が返す */
 function load_config(): array
@@ -136,13 +136,28 @@ function verify_turnstile(array $config, string $token): bool
     return is_array($json) && ($json['success'] ?? false) === true;
 }
 
-/** 受付番号・受注番号を採番する。呼び出し側のトランザクション（BEGIN IMMEDIATE）の中で使う */
+/**
+ * 受付番号・受注番号を採番する（{PREFIX}-YYYYMMDD-NNN。NNN は日ごとに 001 から）。
+ * 呼び出し側のトランザクション（BEGIN IMMEDIATE）の中で使う。
+ * 日ごとの最後の番号を id_sequences に持ち、行を消しても番号を戻さない（2026-10-09。以前は
+ * 「その日の行数＋1」で数えていたため、試験の行を消すたびに同じ番号を出し直していた）。
+ * 表を作る前のデータに備え、カウンターが無い日はその日の既存の番号の最大値から続ける。
+ */
 function next_public_id(PDO $pdo, string $prefix, string $table): string
 {
     $day = date('Ymd');
-    $st = $pdo->prepare("SELECT COUNT(*) FROM {$table} WHERE public_id LIKE ?");
-    $st->execute(["{$prefix}-{$day}-%"]);
-    return sprintf('%s-%s-%03d', $prefix, $day, (int)$st->fetchColumn() + 1);
+    $st = $pdo->prepare('SELECT last FROM id_sequences WHERE prefix = ? AND day = ?');
+    $st->execute([$prefix, $day]);
+    $last = $st->fetchColumn();
+    if ($last === false) {
+        $st = $pdo->prepare("SELECT MAX(CAST(substr(public_id, -3) AS INTEGER)) FROM {$table} WHERE public_id LIKE ?");
+        $st->execute(["{$prefix}-{$day}-%"]);
+        $last = (int)$st->fetchColumn();
+    }
+    $next = (int)$last + 1;
+    $st = $pdo->prepare('INSERT OR REPLACE INTO id_sequences (prefix, day, last) VALUES (?, ?, ?)');
+    $st->execute([$prefix, $day, $next]);
+    return sprintf('%s-%s-%03d', $prefix, $day, $next);
 }
 
 /**
