@@ -19,38 +19,46 @@ try {
 
 $ipHash = ip_hash($config);
 
-// 他のサイトからの送信を断る（Origin が付いていて許可外のとき）
-$origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+// 迷惑送信の対策 1: 同じ送信元から 1 時間に 5 回まで（受け付けた送信と迷惑送信の疑いを数える。入力の誤りは数えない）。
+// Turnstile より前に記録を書く判定（他サイト・ハニーポット・速すぎ）より先に確かめ、断った記録も 1 時間に 1 行だけ書く
+// （Turnstile を通らない送信で DB を太らせないため。2026-10-14）
+if ($ipHash !== null) {
+    $since = date('c', time() - 3600);
+    $st = $pdo->prepare("SELECT COUNT(*) FROM submission_log WHERE ip_hash = ? AND created_at >= ?
+                         AND result IN ('ok', 'origin', 'honeypot', 'too_fast', 'turnstile')");
+    $st->execute([$ipHash, $since]);
+    if ((int)$st->fetchColumn() >= 5) {
+        $st = $pdo->prepare("SELECT 1 FROM submission_log WHERE ip_hash = ? AND created_at >= ? AND result = 'rate_limited' LIMIT 1");
+        $st->execute([$ipHash, $since]);
+        if ($st->fetchColumn() === false) {
+            log_submission($pdo, $ipHash, 'rate_limited');
+        }
+        error_page(429, '送信できませんでした', ['短い時間に何度も送信されています。時間をおいてから、もう一度お試しください。']);
+    }
+}
+
+// 2: 他のサイトからの送信を断る（Origin が付いていて許可外のとき）
+$origin = (string)($_SERVER['HTTP_ORIGIN'] ?? '');
 if ($origin !== '' && !in_array($origin, $config['allowed_origins'], true)) {
-    log_submission($pdo, $ipHash, 'invalid', 'origin ' . $origin);
+    log_submission($pdo, $ipHash, 'origin', $origin);
     error_page(403, '送信できませんでした', ['このページからは送信できません。']);
 }
 
 $in = static fn(string $k): string => trim(str_replace("\r\n", "\n", (string)($_POST[$k] ?? '')));
 
-// 迷惑送信の対策 1: 人には見えない欄（website）に入力があれば、受け付けたふりをして保存しない
+// 3: 人には見えない欄（website）に入力があれば、受け付けたふりをして保存しない
 if ($in('website') !== '') {
     log_submission($pdo, $ipHash, 'honeypot');
     header('Location: /contact/thanks/', true, 303);
     exit;
 }
-// 2: 画面を開いてから 3 秒未満の送信（JS が入れる started_at。JS が無ければ確かめない）
+// 4: 画面を開いてから 3 秒未満の送信（JS が入れる started_at。JS が無ければ確かめない）
 $started = $in('started_at');
 if ($started !== '' && ctype_digit($started) && (microtime(true) * 1000 - (int)$started) < 3000) {
     log_submission($pdo, $ipHash, 'too_fast');
     error_page(400, '送信できませんでした', ['入力の確認に時間がかかっています。少し待ってからもう一度送信してください。']);
 }
-// 3: 同じ送信元から 1 時間に 5 回まで（受け付けた送信と迷惑送信の疑いを数える。入力の誤りは数えない）
-if ($ipHash !== null) {
-    $st = $pdo->prepare("SELECT COUNT(*) FROM submission_log WHERE ip_hash = ? AND created_at >= ?
-                         AND result IN ('ok', 'honeypot', 'too_fast', 'turnstile')");
-    $st->execute([$ipHash, date('c', time() - 3600)]);
-    if ((int)$st->fetchColumn() >= 5) {
-        log_submission($pdo, $ipHash, 'rate_limited');
-        error_page(429, '送信できませんでした', ['短い時間に何度も送信されています。時間をおいてから、もう一度お試しください。']);
-    }
-}
-// 4: Cloudflare Turnstile
+// 5: Cloudflare Turnstile
 if (!verify_turnstile($config, $in('cf-turnstile-response'))) {
     log_submission($pdo, $ipHash, 'turnstile');
     error_page(400, '送信できませんでした', ['送信の確認（ボット対策）が完了していません。入力画面に戻り、確認の表示が終わってから送信してください。']);
@@ -89,6 +97,14 @@ $choice = static function (string $k, string $label, bool $required) use ($in, $
 $companyName = $text('company_name', '会社名・屋号', true);
 $customerType = $choice('customer_type', '業種', true);
 $contactName = $text('contact_name', 'ご担当者名', true);
+$layout = $text('layout', '間取り', false);
+// 会社名・担当者名・間取りはお客さまへの控えにそのまま入る。第三者のアドレス宛てに URL を送る踏み台にされないよう、
+// URL らしい値（://、www.、http、「ドメイン名/」）を断る（2026-10-14）
+foreach (['会社名・屋号' => $companyName, 'ご担当者名' => $contactName, '間取り' => $layout] as $label => $v) {
+    if ($v !== null && preg_match('~://|：／／|www\.|ｗｗｗ．|https?:|ｈｔｔｐ|[a-z0-9-]\.[a-z]{2,}\s*/~iu', $v)) {
+        $errors[] = "{$label}にURLは入力できません。";
+    }
+}
 $email = $text('email', 'メールアドレス', true);
 if ($email !== null && (!filter_var($email, FILTER_VALIDATE_EMAIL) || preg_match('/[\r\n]/', $email))) {
     $errors[] = 'メールアドレスの形式が正しくありません。';
@@ -99,7 +115,6 @@ if ($phone !== null && !preg_match('/^[0-9+\-() ]{10,20}$/', $phone)) {
 }
 $prefecture = $choice('prefecture', '所在地', false);
 $propertyType = $choice('property_type', '物件の種類', true);
-$layout = $text('layout', '間取り', false);
 $photoChoice = $choice('photo_count', '室内写真の枚数', true);
 $floorplanType = $choice('floorplan_type', '間取り図', true);
 $photoSource = $choice('photo_source', '写真の状態', false);
@@ -130,12 +145,16 @@ $estimate = estimate($pricing, $photoCount);
 $emailNorm = mb_strtolower((string)$email);
 $now = now_iso();
 
+// フォームにある欄だけを、1 つ 2000 文字までで残す（知らない欄や長い値で DB を太らせないため。2026-10-14）
+$rawKeys = ['company_name', 'customer_type', 'contact_name', 'email', 'phone', 'prefecture', 'property_type', 'layout',
+    'photo_count', 'floorplan_type', 'photo_source', 'usage', 'wants_object_removal', 'desired_deadline', 'expected_volume',
+    'contact_preference', 'message', 'consent', 'started_at', 'source_page', 'referrer', 'utm_source', 'utm_medium', 'utm_campaign'];
 $raw = [];
-foreach ($_POST as $k => $v) {
-    if (in_array($k, ['cf-turnstile-response', 'website'], true)) {
+foreach ($rawKeys as $k) {
+    if (!isset($_POST[$k])) {
         continue;
     }
-    $raw[$k] = $v;
+    $raw[$k] = $k === 'usage' ? $usage : mb_substr(is_string($_POST[$k]) ? $_POST[$k] : '', 0, 2000);
 }
 
 try {
@@ -222,11 +241,12 @@ $lines = [
     '今後のご依頼の見込み：' . ($expectedVolume === null ? '（未選択）' : option_label($form, 'expected_volume', $expectedVolume)),
     '',
     'ご質問・ご要望：',
-    $message ?? '（なし）',
-    '',
-    '料金の目安：' . $yen($estimate),
 ];
-$summary = implode("\n", $lines);
+$tail = ['', '料金の目安：' . $yen($estimate)];
+// 自由記入の「ご質問・ご要望」は自分への通知にだけ載せ、お客さまへの控えには載せない
+// （第三者のアドレスを入れて好きな文章を送る踏み台にされないため。2026-10-14）
+$summary = implode("\n", array_merge($lines, [$message ?? '（なし）'], $tail));
+$replySummary = implode("\n", array_merge($lines, [$message === null ? '（なし）' : 'あり（控えでは省略しています）'], $tail));
 
 $notifyBody = "LP のフォームからお問い合わせがありました。\n\n{$summary}\n\n"
     . "送信日時：{$now}\n参照元：" . ($in('referrer') ?: '（なし）') . "\n"
@@ -240,7 +260,7 @@ $contact = (string)($config['contact_email'] ?? 'info@macmariya.com');
 $replyBody = "{$companyName}\n{$contactName} 様\n\n"
     . "AI内覧動画のお問い合わせをいただき、ありがとうございます。\n"
     . "次の内容で受け付けました。内容を確認のうえ、担当者から折り返しご連絡します。\n\n"
-    . "--------------------------------\n{$summary}\n--------------------------------\n\n"
+    . "--------------------------------\n{$replySummary}\n--------------------------------\n\n"
     . "料金の目安は、室内写真の枚数から出したものです。正式な金額は、写真と間取り図を拝見してからお見積りします。\n"
     . "このメールにお心当たりがない場合は、お手数ですがこのまま破棄してください。\n\n"
     . "マクマリ\n{$contact}\nhttps://madori.macmariya.com/\n";

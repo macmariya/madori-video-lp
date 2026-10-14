@@ -137,7 +137,7 @@ CREATE TABLE IF NOT EXISTS mail_log (
 CREATE TABLE IF NOT EXISTS submission_log (
   id          INTEGER PRIMARY KEY AUTOINCREMENT,
   ip_hash     TEXT,
-  result      TEXT NOT NULL,                              -- ok / honeypot / too_fast / turnstile / invalid / rate_limited / error
+  result      TEXT NOT NULL,                              -- ok / origin / honeypot / too_fast / turnstile / invalid / rate_limited / error
   detail      TEXT,
   created_at  TEXT NOT NULL
 );

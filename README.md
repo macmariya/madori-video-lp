@@ -51,7 +51,7 @@ bash scripts/make_media.sh
 
 ```bash
 bash scripts/serve_local.sh      # http://127.0.0.1:8080 （メールは .local/private/mail/ に .eml で書く）
-bash tests/inquiry_test.sh       # 別のターミナルで。DB を作り直して 16 項目を確かめる
+bash tests/inquiry_test.sh       # 別のターミナルで。DB を作り直して 33 項目を確かめる
 bash tests/sync_test.sh          # 受注管理アプリとの同期口（20 項目）
 ```
 
@@ -80,6 +80,6 @@ bash scripts/setup_private.sh        # 初回だけ。ドキュメントルー�
 
 公開直後の確認（`scripts/setup_private.sh` が表示した合言葉を使う）:
 
-1. `https://madori.macmariya.com/api/check.php?token=…` で `pdo_sqlite`・`private_dir_writable` が true、`allow_url_fopen` か `curl` のどちらかが true、`db_under_docroot` が false。500 になるときは config.php の権限（PHP の実行ユーザーが読めるか）を疑う
+1. `https://madori.macmariya.com/api/check.php?token=…` で `pdo_sqlite`・`private_dir_writable` が true、`allow_url_fopen` か `curl` のどちらかが true、`db_under_docroot` が false、`client_ip_source` が `cloudflare`（`direct` や `unknown_proxy` なら送信元 IP の取り方を見直す）。500 になるときは config.php の権限（PHP の実行ユーザーが読めるか）を疑う
 2. 自分宛てにフォームから 1 件送り、通知と控えの両方が届くこと、Gmail の「メッセージのソースを表示」で SPF が PASS であることを確かめる
 3. 確かめたら config.php の `check_token` を空にし、試験の行を DB から消す（消し方は `docs/schema.md` の「試験の後片付け」。`id_sequences` は消さない。消すと受付番号が出し直しになる）

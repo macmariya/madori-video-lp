@@ -56,11 +56,79 @@ function migrate(PDO $pdo): void
     $st->execute([SCHEMA_VERSION, now_iso()]);
 }
 
-/** Cloudflare 経由なので、送信元は CF-Connecting-IP を優先する（オリジンへ直接送られた場合は偽装できる） */
+/** Cloudflare の IP 帯（https://www.cloudflare.com/ips-v4 と ips-v6。2026-10-14 に取得） */
+const CLOUDFLARE_RANGES = [
+    '173.245.48.0/20', '103.21.244.0/22', '103.22.200.0/22', '103.31.4.0/22', '141.101.64.0/18',
+    '108.162.192.0/18', '190.93.240.0/20', '188.114.96.0/20', '197.234.240.0/22', '198.41.128.0/17',
+    '162.158.0.0/15', '104.16.0.0/13', '104.24.0.0/14', '172.64.0.0/13', '131.0.72.0/22',
+    '2400:cb00::/32', '2606:4700::/32', '2803:f800::/32', '2405:b500::/32', '2405:8100::/32',
+    '2a06:98c0::/29', '2c0f:f248::/32',
+];
+
+function ip_in_cidr(string $ip, string $cidr): bool
+{
+    [$net, $bits] = explode('/', $cidr);
+    $a = @inet_pton($ip);
+    $b = @inet_pton($net);
+    if ($a === false || $b === false || strlen($a) !== strlen($b)) {
+        return false;
+    }
+    $bits = (int)$bits;
+    $bytes = intdiv($bits, 8);
+    if (substr($a, 0, $bytes) !== substr($b, 0, $bytes)) {
+        return false;
+    }
+    $rest = $bits % 8;
+    if ($rest === 0) {
+        return true;
+    }
+    $mask = (0xff << (8 - $rest)) & 0xff;
+    return (ord($a[$bytes]) & $mask) === (ord($b[$bytes]) & $mask);
+}
+
+function is_cloudflare_ip(string $ip): bool
+{
+    foreach (CLOUDFLARE_RANGES as $cidr) {
+        if (ip_in_cidr($ip, $cidr)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+/**
+ * 送信元の IP と、それをどこから取ったか。CF-Connecting-IP は、つないできた相手が Cloudflare のときだけ信じる
+ * （オリジンへ直接送られると偽装できるため。2026-10-14）。
+ * つないできた相手（REMOTE_ADDR）がサーバー内の中継（プライベート・ループバック）なら、X-Forwarded-For の
+ * 最後の値（中継が書き足す、直前の相手）で判断する。それも無ければ判断できないので CF-Connecting-IP を使う。
+ * @return array{0: string, 1: string} [IP, 'cloudflare' | 'direct' | 'unknown_proxy']
+ */
+function client_ip_info(): array
+{
+    $valid = static fn($ip): bool => is_string($ip) && filter_var($ip, FILTER_VALIDATE_IP) !== false;
+    $public = static fn(string $ip): bool => filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE) !== false;
+    $cf = trim((string)($_SERVER['HTTP_CF_CONNECTING_IP'] ?? ''));
+    $peer = (string)($_SERVER['REMOTE_ADDR'] ?? '');
+    if ($valid($peer) && !$public($peer)) {
+        $xff = array_map('trim', explode(',', (string)($_SERVER['HTTP_X_FORWARDED_FOR'] ?? '')));
+        $last = (string)end($xff);
+        if (!$valid($last)) {
+            return [$valid($cf) ? $cf : $peer, 'unknown_proxy'];
+        }
+        $peer = $last;
+    }
+    if (!$valid($peer)) {
+        return ['', 'direct'];
+    }
+    if (is_cloudflare_ip($peer)) {
+        return [$valid($cf) ? $cf : $peer, 'cloudflare'];
+    }
+    return [$peer, 'direct'];
+}
+
 function client_ip(): string
 {
-    $ip = $_SERVER['HTTP_CF_CONNECTING_IP'] ?? $_SERVER['REMOTE_ADDR'] ?? '';
-    return filter_var($ip, FILTER_VALIDATE_IP) ? $ip : '';
+    return client_ip_info()[0];
 }
 
 function ip_hash(array $config): ?string
@@ -94,10 +162,11 @@ function option_values(array $form, string $field): array
     return array_column($form['options'][$field], 'value');
 }
 
+/** detail は送信者が決められる値を含むので 300 文字で切る（長い値で DB を太らせないため） */
 function log_submission(PDO $pdo, ?string $ipHash, string $result, ?string $detail = null): void
 {
     $st = $pdo->prepare('INSERT INTO submission_log (ip_hash, result, detail, created_at) VALUES (?, ?, ?, ?)');
-    $st->execute([$ipHash, $result, $detail, now_iso()]);
+    $st->execute([$ipHash, $result, $detail === null ? null : mb_substr($detail, 0, 300), now_iso()]);
 }
 
 /** Turnstile のトークンを確かめる。設定に秘密鍵が無ければ確かめない（ローカル検証用） */

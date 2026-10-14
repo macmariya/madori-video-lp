@@ -25,6 +25,9 @@ $out = [
     'curl' => function_exists('curl_init'),
     'private_dir_writable' => is_writable($config['private_dir']),
     'db_under_docroot' => strpos(realpath(dirname($config['db_path'])) ?: '', realpath($_SERVER['DOCUMENT_ROOT'] ?? '') ?: '//') === 0,
+    // 送信元 IP の取り方。Cloudflare 経由で開いて cloudflare になれば、IP の偽装を防げている（direct は Cloudflare を通っていない、
+    // unknown_proxy はサーバー内の中継が直前の相手を渡しておらず判断できない）
+    'client_ip_source' => client_ip_info()[1],
     'timezone' => date_default_timezone_get(),
     'now' => now_iso(),
 ];

@@ -25,7 +25,7 @@ check "顧客は 1 件にまとまる" "$(q "SELECT COUNT(*) FROM customers")" "
 check "21 枚以上は概算 NULL（要見積）" "$(q "SELECT IFNULL(estimate_amount,'NULL')||'/'||IFNULL(photo_count,'NULL') FROM inquiries WHERE id=2")" "NULL/NULL"
 r=$(post "${valid[@]}" --data-urlencode website=http://spam.example); check "ハニーポットは完了ページへ（番号なし）" "$r" "303 $BASE/contact/thanks/"
 check "ハニーポットは保存しない" "$(q "SELECT COUNT(*) FROM inquiries")" "2"
-r=$(post "${valid[@]}" -H "Origin: https://evil.example"); check "他サイトからの送信は 403" "${r%% *}" "403"
+r=$(post "${valid[@]}" -H "Origin: https://evil.example" -H "CF-Connecting-IP: 192.0.2.10"); check "他サイトからの送信は 403" "${r%% *}" "403"
 now=$(( $(date +%s) * 1000 )); r=$(post "${valid[@]}" --data-urlencode started_at=$now); check "開いて 3 秒未満は 400" "${r%% *}" "400"
 r=$(curl -s -X POST "$BASE/api/inquiry.php" --data-urlencode company_name=x --data-urlencode email=bad --data-urlencode started_at=$old --data-urlencode cf-turnstile-response=XXXX.DUMMY.TOKEN)
 check "入力の誤りは理由を返す" "$(echo "$r" | grep -o -e 'メールアドレスの形式' -e '業種を選んで' -e '同意のうえ' | wc -l | tr -d ' ')" "3"
@@ -35,8 +35,41 @@ r=$(post "${valid[@]}"); check "入力の誤りは回数に数えない・消し
 check "採番のカウンターは 3" "$(q "SELECT last FROM id_sequences WHERE prefix='INQ' AND day='$(date +%Y%m%d)'")" "3"
 check "スキーマの版は 2" "$(q "SELECT MAX(version) FROM schema_migrations")" "2"
 r=$(post "${valid[@]}"); check "受け付け・迷惑送信の疑いが 1 時間に 5 回に達すると 429" "${r%% *}" "429"
-check "記録の内訳" "$(q "SELECT group_concat(result, ',') FROM (SELECT result FROM submission_log ORDER BY id)")" "ok,ok,honeypot,invalid,too_fast,invalid,ok,rate_limited"
+check "記録の内訳" "$(q "SELECT group_concat(result, ',') FROM (SELECT result FROM submission_log ORDER BY id)")" "ok,ok,honeypot,origin,too_fast,invalid,ok,rate_limited"
 check "メールは 3 件 × 2 通（消した 1 件の .eml は残る）" "$(ls .local/private/mail/*.eml | wc -l | tr -d ' ')" "6"
 check "状態の履歴は残っている問い合わせ 2 件ぶん" "$(q "SELECT COUNT(*) FROM status_events WHERE to_status='new'")" "2"
+
+# 2026-10-14 のセキュリティの見直し
+# 回数の制限は Turnstile より前の判定にも効き、断った記録は 1 時間に 1 行だけ
+for i in 1 2 3; do post "${valid[@]}" >/dev/null; done
+check "制限中は何度送っても rate_limited は 1 行" "$(q "SELECT COUNT(*) FROM submission_log WHERE result='rate_limited'")" "1"
+long="https://evil.example/$(printf 'a%.0s' $(seq 1 2000))"
+r=$(post -d x=1 -H "Origin: $long" -H "CF-Connecting-IP: 192.0.2.11"); check "長い Origin も 403" "${r%% *}" "403"
+check "記録の detail は 300 文字で切る" "$(q "SELECT MAX(length(detail)) FROM submission_log")" "300"
+codes=""; for i in 1 2 3 4 5 6; do codes="$codes$(post -d website=x -H "CF-Connecting-IP: 192.0.2.12" | cut -c1-3) "; done
+check "ハニーポットも 1 時間に 5 回で 429" "$codes" "303 303 303 303 303 429 "
+# CF-Connecting-IP は、直前の相手が Cloudflare のときだけ信じる（ローカルは中継の扱いで X-Forwarded-For の最後を見る）
+codes=""; for i in 1 2 3 4 5 6; do codes="$codes$(post -d website=x -H "X-Forwarded-For: 198.51.100.1, 203.0.113.7" -H "CF-Connecting-IP: 192.0.2.$((100+i))" | cut -c1-3) "; done
+check "Cloudflare 以外からの CF-Connecting-IP は無視する（偽っても 6 回目は 429）" "$codes" "303 303 303 303 303 429 "
+codes=""; for i in 1 2 3 4 5 6; do codes="$codes$(post -d website=x -H "X-Forwarded-For: 162.158.1.1" -H "CF-Connecting-IP: 192.0.2.$((110+i))" | cut -c1-3) "; done
+check "Cloudflare からなら CF-Connecting-IP を使う（送信元ごとに数える）" "$codes" "303 303 303 303 303 303 "
+check "IPv6 の Cloudflare の帯も判定できる" "$(php -r 'require "public/api/_lib.php"; echo json_encode([is_cloudflare_ip("2a06:98c7::1"), is_cloudflare_ip("2a06:98d0::1"), is_cloudflare_ip("172.71.255.255"), is_cloudflare_ip("172.72.0.0")]);')" "[true,false,true,false]"
+# 控えを踏み台にさせない
+for f in company_name contact_name layout; do
+  r=$(curl -s -X POST "$BASE/api/inquiry.php" "${valid[@]}" --data-urlencode "$f=bit.ly/abc" -H "CF-Connecting-IP: 192.0.2.20")
+  check "$f に URL は入れられない" "$(echo "$r" | grep -c 'URLは入力できません')" "1"
+done
+r=$(curl -s -X POST "$BASE/api/inquiry.php" "${valid[@]}" --data-urlencode "company_name=ｈｔｔｐｓ：／／example" -H "CF-Connecting-IP: 192.0.2.20")
+check "全角の URL も断る" "$(echo "$r" | grep -c 'URLは入力できません')" "1"
+r=$(post "${valid[@]}" --data-urlencode email=third@example.com --data-urlencode "message=受け取りはこちら https://phish.example/" \
+  --data-urlencode junk=xxxxxxxx --data-urlencode "referrer=$(printf 'r%.0s' $(seq 1 3000))" -H "CF-Connecting-IP: 192.0.2.21")
+check "URL を含む要望欄は受け付ける" "${r%% *}" "303"
+body() { php -r '$s = file_get_contents($argv[1]); $p = strpos($s, "\r\n\r\n"); echo base64_decode(substr($s, $p + 4));' "$1"; }
+reply=$(grep -l '^To: third@example.com' .local/private/mail/*.eml)
+notify=""; for f in $(grep -l '^To: info@macmariya.com' .local/private/mail/*.eml); do body "$f" | grep -q third@example.com && notify=$f; done
+check "控えには要望欄の本文を載せない" "$(body "$reply" | grep -c phish)/$(body "$reply" | grep -c '控えでは省略')" "0/1"
+check "自分への通知には本文を載せる" "$(body "$notify" | grep -c phish)" "1"
+check "raw_json はフォームの欄だけ・2000 文字まで" "$(q "SELECT json_extract(raw_json,'$.junk') IS NULL, length(json_extract(raw_json,'$.referrer')) FROM inquiries WHERE email='third@example.com'")" "1|2000"
+
 echo "pass=$pass fail=$fail"
 [ "$fail" -eq 0 ]
