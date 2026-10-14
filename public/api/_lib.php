@@ -123,6 +123,10 @@ function client_ip_info(): array
     if (is_cloudflare_ip($peer)) {
         return [$valid($cf) ? $cf : $peer, 'cloudflare'];
     }
+    // サーバー側（mod_remoteip など）が CF-Connecting-IP から送信元をすでに書き換えている
+    if ($peer === $cf) {
+        return [$peer, 'server_resolved'];
+    }
     return [$peer, 'direct'];
 }
 

@@ -53,6 +53,10 @@ codes=""; for i in 1 2 3 4 5 6; do codes="$codes$(post -d website=x -H "X-Forwar
 check "Cloudflare 以外からの CF-Connecting-IP は無視する（偽っても 6 回目は 429）" "$codes" "303 303 303 303 303 429 "
 codes=""; for i in 1 2 3 4 5 6; do codes="$codes$(post -d website=x -H "X-Forwarded-For: 162.158.1.1" -H "CF-Connecting-IP: 192.0.2.$((110+i))" | cut -c1-3) "; done
 check "Cloudflare からなら CF-Connecting-IP を使う（送信元ごとに数える）" "$codes" "303 303 303 303 303 303 "
+src() { curl -s "$BASE/api/check.php?token=local" "$@" | php -r 'echo json_decode(stream_get_contents(STDIN), true)["client_ip_source"];'; }
+check "送信元の判定（Cloudflare / サーバーが解決済み / 直接 / 中継で不明）" \
+  "$(src -H 'X-Forwarded-For: 162.158.1.1' -H 'CF-Connecting-IP: 192.0.2.1') $(src -H 'X-Forwarded-For: 203.0.113.9' -H 'CF-Connecting-IP: 203.0.113.9') $(src -H 'X-Forwarded-For: 203.0.113.9' -H 'CF-Connecting-IP: 192.0.2.1') $(src)" \
+  "cloudflare server_resolved direct unknown_proxy"
 check "IPv6 の Cloudflare の帯も判定できる" "$(php -r 'require "public/api/_lib.php"; echo json_encode([is_cloudflare_ip("2a06:98c7::1"), is_cloudflare_ip("2a06:98d0::1"), is_cloudflare_ip("172.71.255.255"), is_cloudflare_ip("172.72.0.0")]);')" "[true,false,true,false]"
 # 控えを踏み台にさせない
 for f in company_name contact_name layout; do

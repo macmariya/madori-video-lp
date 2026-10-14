@@ -25,9 +25,16 @@ $out = [
     'curl' => function_exists('curl_init'),
     'private_dir_writable' => is_writable($config['private_dir']),
     'db_under_docroot' => strpos(realpath(dirname($config['db_path'])) ?: '', realpath($_SERVER['DOCUMENT_ROOT'] ?? '') ?: '//') === 0,
-    // 送信元 IP の取り方。Cloudflare 経由で開いて cloudflare になれば、IP の偽装を防げている（direct は Cloudflare を通っていない、
-    // unknown_proxy はサーバー内の中継が直前の相手を渡しておらず判断できない）
+    // 送信元 IP の取り方。Cloudflare 経由で開いて cloudflare か server_resolved になれば、IP の偽装を防げている
+    // （direct は Cloudflare を通っていないか、前段の中継の IP が入っている。unknown_proxy はサーバー内の中継が直前の相手を渡しておらず判断できない）
     'client_ip_source' => client_ip_info()[1],
+    // 判断の材料（開いた人自身の IP が出る。合言葉を知る人しか見られない）
+    'ip_headers' => [
+        'remote_addr' => $_SERVER['REMOTE_ADDR'] ?? null,
+        'cf_connecting_ip' => $_SERVER['HTTP_CF_CONNECTING_IP'] ?? null,
+        'x_forwarded_for' => $_SERVER['HTTP_X_FORWARDED_FOR'] ?? null,
+        'x_real_ip' => $_SERVER['HTTP_X_REAL_IP'] ?? null,
+    ],
     'timezone' => date_default_timezone_get(),
     'now' => now_iso(),
 ];

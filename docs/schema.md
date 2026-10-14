@@ -55,7 +55,7 @@ ordered → materials_received → in_production → first_draft_sent → revisi
 - **料金の概算**（`estimate_amount`）は送信時の料金表（`price_version`）で計算した値。価格を改定したら `form.json` の `pricing.version` を変える。見積で出した額は `quote_amount`、受注の確定額は `orders.amount`
 - **送信された項目そのもの**を `raw_json` に残す。フォームの項目を増減しても過去分の中身を失わない（`form_version` でどの版のフォームかが分かる）。残すのはフォームにある欄だけで、値は 1 つ 2000 文字まで（2026-10-14。知らない欄や長い値で DB を太らせないため）。項目を足したら `inquiry.php` の `$rawKeys` にも足す
 - **顧客情報**は `customers` に最新の値を持ち、`inquiries` にも送信時点の写しを持つ（社名変更・担当者の交代に耐える）
-- **IP アドレス**は保存せず、`sha256(塩 + IP)` だけを持つ（連続送信の制限と迷惑送信の把握に使う）。`CF-Connecting-IP` は、つないできた相手が Cloudflare の IP 帯（`_lib.php` の `CLOUDFLARE_RANGES`）のときだけ使い、それ以外はつないできた相手の IP を使う（2026-10-14。オリジンへ直接送ってヘッダーを偽り、回数の制限をかわされないため）。Cloudflare が IP 帯を変えたら書き直す
+- **IP アドレス**は保存せず、`sha256(塩 + IP)` だけを持つ（連続送信の制限と迷惑送信の把握に使う）。`CF-Connecting-IP` は、つないできた相手が Cloudflare の IP 帯（`_lib.php` の `CLOUDFLARE_RANGES`）のときだけ使い、それ以外はつないできた相手の IP を使う（サーバー側が送信元をすでに書き換えていれば、それをそのまま使う。2026-10-14。オリジンへ直接送ってヘッダーを偽り、回数の制限をかわされないため）。Cloudflare が IP 帯を変えたら書き直す
 - **連続送信の制限**は同じ送信元から 1 時間に 5 回。`submission_log` の `ok`・`origin`（他サイトからの送信）・`honeypot`・`too_fast`・`turnstile` を数え、入力の誤り（`invalid`）は数えない。Turnstile より前に記録を書く判定より先に確かめ、断った `rate_limited` は 1 時間に 1 行だけ書く。`detail` は 300 文字で切る
 - **お客さまへの控え**には「ご質問・ご要望」の本文を載せない（自分への通知には載せる）。会社名・担当者名・間取りは控えにそのまま入るので、URL らしい値を入力の誤りとして断る（2026-10-14。第三者のアドレスを入れて好きな文章を送る踏み台にされないため）
 - **外部の番号**: ココナラの取引は `orders.coconala_order_id`、freee の取引は `orders.freee_deal_id`
