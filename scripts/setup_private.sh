@@ -32,6 +32,7 @@ return [
     'allowed_origins' => ['https://madori.macmariya.com'],
     'check_token' => '${TOKEN}',
     'sync_token' => '${SYNC_TOKEN}',
+    'origin_secret' => '',  // Cloudflare の Transform Rule を作ってから入れる（README の「Cloudflare を通らない送信を断る」）
 ];
 PHP
 "${SSH[@]}" "$REMOTE" "ls -la '$PRIVATE_DIR'"

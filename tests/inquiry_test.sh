@@ -75,5 +75,19 @@ check "控えには要望欄の本文を載せない" "$(body "$reply" | grep -c
 check "自分への通知には本文を載せる" "$(body "$notify" | grep -c phish)" "1"
 check "raw_json はフォームの欄だけ・2000 文字まで" "$(q "SELECT json_extract(raw_json,'$.junk') IS NULL, length(json_extract(raw_json,'$.referrer')) FROM inquiries WHERE email='third@example.com'")" "1|2000"
 
+# Cloudflare の合言葉（origin_secret）。設定を書き換えて確かめ、元に戻す（2026-10-15）
+CONF=.local/private/config.php; cp "$CONF" "$CONF.bak"
+auth() { curl -s "$BASE/api/check.php?token=local" "$@" | php -r 'echo json_decode(stream_get_contents(STDIN), true)["origin_auth"];'; }
+check "合言葉の設定が空なら確かめない" "$(auth)" "off"
+sed -i.tmp "s/'origin_secret' => '[^']*'/'origin_secret' => 'test-origin-secret-0123456789abcdef'/" "$CONF"; rm -f "$CONF.tmp"
+ok="X-Origin-Auth: test-origin-secret-0123456789abcdef"
+check "合言葉の判定（無い / 違う / 合う）" "$(auth) $(auth -H 'X-Origin-Auth: wrong') $(auth -H "$ok")" "missing mismatch ok"
+n=$(q "SELECT COUNT(*) FROM submission_log")
+r1=$(post -d website=x -H "CF-Connecting-IP: 192.0.2.30" | cut -c1-3); r2=$(post -d website=x -H "CF-Connecting-IP: 192.0.2.30" -H 'X-Origin-Auth: wrong' | cut -c1-3)
+r3=$(post -d website=x -H "CF-Connecting-IP: 192.0.2.30" -H "$ok" | cut -c1-3)
+check "合言葉が無い・違う送信は 403、合えば通す" "$r1 $r2 $r3" "403 403 303"
+check "断った送信は記録を書かない（通した 1 件だけ増える）" "$(( $(q "SELECT COUNT(*) FROM submission_log") - n ))" "1"
+mv "$CONF.bak" "$CONF"
+
 echo "pass=$pass fail=$fail"
 [ "$fail" -eq 0 ]

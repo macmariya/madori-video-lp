@@ -51,7 +51,7 @@ bash scripts/make_media.sh
 
 ```bash
 bash scripts/serve_local.sh      # http://127.0.0.1:8080 （メールは .local/private/mail/ に .eml で書く）
-bash tests/inquiry_test.sh       # 別のターミナルで。DB を作り直して 34 項目を確かめる
+bash tests/inquiry_test.sh       # 別のターミナルで。DB を作り直して 38 項目を確かめる
 bash tests/sync_test.sh          # 受注管理アプリとの同期口（20 項目）
 ```
 
@@ -80,6 +80,20 @@ bash scripts/setup_private.sh        # 初回だけ。ドキュメントルー�
 
 公開直後の確認（`scripts/setup_private.sh` が表示した合言葉を使う）:
 
-1. `https://madori.macmariya.com/api/check.php?token=…` で `pdo_sqlite`・`private_dir_writable` が true、`allow_url_fopen` か `curl` のどちらかが true、`db_under_docroot` が false、`client_ip_source` が `cloudflare` か `server_resolved`（`direct` や `unknown_proxy` なら、`ip_headers` を見て送信元 IP の取り方を見直す）。500 になるときは config.php の権限（PHP の実行ユーザーが読めるか）を疑う
+1. `https://madori.macmariya.com/api/check.php?token=…` で `pdo_sqlite`・`private_dir_writable` が true、`allow_url_fopen` か `curl` のどちらかが true、`db_under_docroot` が false、`client_ip_source` が `cloudflare` か `server_resolved`（`direct` や `unknown_proxy` なら、`ip_headers` を見て送信元 IP の取り方を見直す）、`origin_auth` が `ok`（下の「Cloudflare を通らない送信を断る」）。500 になるときは config.php の権限（PHP の実行ユーザーが読めるか）を疑う
 2. 自分宛てにフォームから 1 件送り、通知と控えの両方が届くこと、Gmail の「メッセージのソースを表示」で SPF が PASS であることを確かめる
 3. 確かめたら config.php の `check_token` を空にし、試験の行を DB から消す（消し方は `docs/schema.md` の「試験の後片付け」。`id_sequences` は消さない。消すと受付番号が出し直しになる）
+
+### Cloudflare を通らない送信を断る
+
+バリューサーバーは、どこから来た通信でも `CF-Connecting-IP` を信じて送信元の IP（`REMOTE_ADDR`）を書き換える。オリジンの IP へ直接送ると送信元を偽れ、フォームの回数の制限をかわせる（2026-10-15 に確かめた。`check.php` の `client_ip_source` が `server_resolved` になるのはこのため）。そこで Cloudflare から送る通信にだけ合言葉のヘッダー `X-Origin-Auth` を付け、`inquiry.php` はこれが無い送信を 403 で断る。`.htaccess` で Cloudflare の IP 帯に絞る方法は、書き換え後の IP で判定されるので使えない。
+
+順番を守る（逆にするとフォームが全部 403 になる）:
+
+1. 合言葉を作る: `openssl rand -hex 32`
+2. Cloudflare の `macmariya.com` のゾーンで Rules → Transform Rules → Request Header Transform Rules（Modify Request Header）にルールを作る。条件は Hostname が `madori.macmariya.com` と等しい、操作は Set static で、ヘッダー名 `X-Origin-Auth`、値は 1 の合言葉
+3. `check.php` を開き、`origin_auth_header_present` が true になったことを確かめる（この時点の `origin_auth` は `off`）
+4. サーバーの `config.php` に `'origin_secret' => '<1 の合言葉>',` を足す
+5. `check.php` で `origin_auth` が `ok` になること、オリジンへ直接送ると断られることを確かめる: `curl -sk --resolve madori.macmariya.com:443:<オリジンの IP> -X POST -d website=x -o /dev/null -w '%{http_code}\n' https://madori.macmariya.com/api/inquiry.php` が 403
+
+合言葉を変えるときは、Cloudflare のルールと `config.php` を続けて書き換える（その間の送信は 403 になる）。

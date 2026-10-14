@@ -23,8 +23,10 @@ return [
     'allowed_origins' => ['http://127.0.0.1:$PORT', 'http://localhost:$PORT'],
     'check_token' => 'local',
     'sync_token' => '${SYNC_TOKEN:-local-sync-token-0123456789abcdef0123}',
+    'origin_secret' => '${ORIGIN_SECRET:-}',
 ];
 PHP
 npm run build >/dev/null
 printf "<?php\nreturn %s;\n" "'$PRIV'" > dist/api/_private_path.php
-exec php -S "127.0.0.1:$PORT" -t dist
+# opcache はファイルの変更を 2 秒おきにしか見ないので、毎回見るようにする（試験が設定や PHP を書き換えた直後に古い内容で動かないため）
+exec php -d opcache.revalidate_freq=0 -S "127.0.0.1:$PORT" -t dist

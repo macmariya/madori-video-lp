@@ -29,4 +29,9 @@ return [
     // 受注管理アプリ（NAS の madori-orders）が api/sync.php を呼ぶときの合言葉。32 文字以上（openssl rand -hex 32）。
     // 空にすると sync.php は 404 を返す。NAS 側の .env の SERVER_SYNC_TOKEN と同じ値にする
     'sync_token' => '',
+
+    // Cloudflare の Transform Rule が付けるヘッダー X-Origin-Auth の値。32 文字以上（openssl rand -hex 32）。
+    // 入れると、このヘッダーが無い・違うフォームの送信を 403 で断る（オリジンへ直接送って送信元の IP を偽られないため）。
+    // 空なら確かめない。先に Cloudflare のルールを作り、check.php の origin_auth_header_present が true になってから入れる
+    'origin_secret' => '',
 ];

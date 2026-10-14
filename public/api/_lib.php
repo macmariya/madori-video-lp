@@ -135,6 +135,25 @@ function client_ip(): string
     return client_ip_info()[0];
 }
 
+/**
+ * Cloudflare を通った通信かを、Cloudflare の Transform Rule が付ける合言葉のヘッダー X-Origin-Auth で確かめる。
+ * バリューサーバーはどこから来た通信でも CF-Connecting-IP で送信元を書き換えるため、IP では見分けられない
+ * （2026-10-15 にオリジンへ直接送って確かめた）。設定の origin_secret が空なら確かめない。
+ * @return string 'off'（設定が空）/ 'ok' / 'missing'（ヘッダーが無い）/ 'mismatch'（値が違う）
+ */
+function origin_auth_status(array $config): string
+{
+    $secret = (string)($config['origin_secret'] ?? '');
+    $given = (string)($_SERVER['HTTP_X_ORIGIN_AUTH'] ?? '');
+    if ($secret === '') {
+        return 'off';
+    }
+    if ($given === '') {
+        return 'missing';
+    }
+    return hash_equals($secret, $given) ? 'ok' : 'mismatch';
+}
+
 function ip_hash(array $config): ?string
 {
     $ip = client_ip();
