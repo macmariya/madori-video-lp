@@ -38,12 +38,21 @@ export type Video = {
   poster: string;
 };
 
-// 制作例は架空 1K・1LDK・2LDK の move 版（2026-10-19 ユーザー決定。still と walk の制作例は外した）。
-// TODO(move): YouTube の ID・秒数・ポスター画像は、架空 3 本の move 版を上げてから入れる（scripts/make_media.sh）
+// 制作例は move 版（部屋ごとに歩く。2026-10-19 ユーザー決定で still と walk の制作例は外した）。
+// MAIN_VIDEO は実在の住宅（制作者の自宅の 1 階）、SIZE_VIDEOS は架空 1K・1LDK・2LDK。どれも音入り（2026-10-20 に音入りを標準にした）。
+// YouTube は 4 本とも限定公開（2026-10-20 にユーザーがアップロード）。ポスター画像は scripts/make_media.sh
+export const MAIN_VIDEO: Video = {
+  id: 'SMeuQ7Phhx4',
+  title: '室内写真と間取り図からAIで作る内覧動画（戸建て1階・サンプル）',
+  label: '戸建ての1階・写真15枚',
+  meta: '約139秒・LDK18帖＋和室・洋室2室＋水回り',
+  poster: '/media/yt-move-house.jpg',
+};
+
 export const SIZE_VIDEOS: Video[] = [
-  { id: 'TODO_MOVE_1K', title: '1K・写真6枚の制作例（架空物件）', label: '1K・写真6枚', meta: '約○秒', poster: '/media/yt-move-1k.jpg' },
-  { id: 'TODO_MOVE_1LDK', title: '1LDK・写真8枚の制作例（架空物件）', label: '1LDK・写真8枚', meta: '約○秒', poster: '/media/yt-move-1ldk.jpg' },
-  { id: 'TODO_MOVE_2LDK', title: '2LDK・写真10枚の制作例（架空物件）', label: '2LDK・写真10枚', meta: '約○秒', poster: '/media/yt-move-2ldk.jpg' },
+  { id: 'HYDOhBbbn-A', title: '1K・写真6枚の制作例（架空物件）', label: '1K・写真6枚', meta: '約48秒', poster: '/media/yt-move-1k.jpg' },
+  { id: '3kdyW_dPL_0', title: '1LDK・写真8枚の制作例（架空物件）', label: '1LDK・写真8枚', meta: '約75秒', poster: '/media/yt-move-1ldk.jpg' },
+  { id: 'zCOAgLBrFic', title: '2LDK・写真10枚の制作例（架空物件）', label: '2LDK・写真10枚', meta: '約73秒', poster: '/media/yt-move-2ldk.jpg' },
 ];
 
 export const PRICES = [
@@ -56,6 +65,7 @@ export const PRICES = [
 
 export const OPTIONS = [
   { name: '追加の修正（1回ごと。撮り直しは3区間まで）', price: '2,000円' },
+  { name: '音の変更（1回ごと。曲調の指定か、候補3つからの選び直し）', price: '2,000円' },
   { name: '写真に写り込んだ物・私物の消去', price: '枚数と内容を伺ってお見積りします' },
 ];
 
@@ -63,14 +73,14 @@ export const DELIVERABLES = [
   { k: '形式', v: 'mp4（16:9）' },
   { k: '解像度', v: 'フルHD（1920×1080）・24fps' },
   { k: '長さ', v: '部屋の数で決まります（写真7枚の1DKで約55秒、写真15枚の戸建て1階で約139秒）' },
-  { k: '音声', v: 'なし（BGM・ナレーションは付けません）' },
+  { k: '音声', v: 'BGM・環境音・効果音入り（AIで作ったオリジナル音源）。音なしの版も一緒にお渡しします。ナレーションは付けません' },
   { k: '表示', v: '画面右上に「AI生成映像」を常時表示し、最後に「実物と細部が異なります」の注記を入れます' },
 ];
 
 export const FLOW = [
   { title: '資料をお送りください', body: '室内写真と間取り図の画像をお送りください。作れるかどうかと、写真の枚数での金額をお知らせします。' },
   { title: '順路と文言のご確認', body: '歩く順路・部屋の順番・部屋名・冒頭と最後のカードの文言を、確認用の映像（間取り図から起こした簡易版）でご確認いただきます。' },
-  { title: '初稿のお届け', body: '資料を受け取ってから3営業日以内に初稿をお届けします。' },
+  { title: '初稿のお届け', body: '資料を受け取ってから3営業日以内に、音入りの初稿をお届けします。映像とあわせて音もご確認ください。' },
   { title: '修正1回で納品', body: '修正1回（1営業日）で納品です。' },
 ];
 
@@ -86,6 +96,10 @@ export const FAQ = [
   {
     q: '写真が無い部屋はどうなりますか',
     a: '写真が無い部屋は動画に入れられません。入れたい部屋があれば、その部屋の写真を追加でお送りください。写真の無い部屋を通らないと順路がつながらない場合は、お受けできないことがあります。',
+  },
+  {
+    q: '音なしにできますか',
+    a: '音入りと音なしの2本をお渡しします。音を外す・音量を変えるだけなら、無料の修正で承ります。曲調を変えるなど別の音に作り直す場合は、オプション「音の変更」になります。',
   },
   {
     q: '石川県外からも依頼できますか',

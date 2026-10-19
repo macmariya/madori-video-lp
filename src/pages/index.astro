@@ -4,11 +4,11 @@ import YouTube from '../components/YouTube.astro';
 import SiteHeader from '../components/SiteHeader.astro';
 import SiteFooter from '../components/SiteFooter.astro';
 import {
-  SITE, SIZE_VIDEOS, PRICES, OPTIONS, DELIVERABLES, FLOW, FAQ,
+  SITE, MAIN_VIDEO, SIZE_VIDEOS, PRICES, OPTIONS, DELIVERABLES, FLOW, FAQ,
 } from '../data/site';
 ---
 <Base>
-  <link slot="head" rel="preload" as="image" href="/media/hero.jpg" fetchpriority="high" />
+  <link slot="head" rel="preload" as="image" href="/media/hero-move.jpg" fetchpriority="high" />
   <SiteHeader />
 
   <main>
@@ -16,8 +16,8 @@ import {
     <section class="hero">
       <video
         class="hero-video"
-        src="/media/hero.mp4"
-        poster="/media/hero.jpg"
+        src="/media/hero-move.mp4"
+        poster="/media/hero-move.jpg"
         autoplay muted loop playsinline
         preload="metadata"
         aria-hidden="true"
@@ -43,7 +43,6 @@ import {
         </div>
       </div>
       <p class="ai-badge">AI生成映像</p>
-      {/* TODO(move): 冒頭の映像・比較の映像と写真は、切り替えのときに move の映像から作り直す（scripts/make_media.sh）。下の説明文もそれに合わせる */}
       <p class="hero-caption">映像は架空の物件（図面・室内写真もAIで生成）の制作例です</p>
     </section>
 
@@ -61,33 +60,32 @@ import {
             <div class="compare-pair">
               <div class="compare-item">
                 <span class="compare-tag">写真</span>
-                <img src="/media/photo-kitchen.jpg" alt="壁付けI型キッチンの室内写真。3口コンロとシンク、白い吊戸棚" width="1280" height="853" loading="lazy" decoding="async" />
+                <img src="/media/photo-move-kitchen.jpg" alt="壁付けI型キッチンの室内写真。3口コンロとシンク、グレージュの扉と吊戸棚、左に木目の扉" width="1280" height="853" loading="lazy" decoding="async" />
               </div>
               <span class="compare-arrow" aria-hidden="true"></span>
               <div class="compare-item">
                 <span class="compare-tag compare-tag-accent">映像</span>
-                <video src="/media/compare-kitchen.mp4" poster="/media/compare-kitchen.jpg" muted loop playsinline preload="none" data-autoplay aria-label="同じキッチンの写真から作った映像。カメラがゆっくり寄る"></video>
+                <video src="/media/compare-move-kitchen.mp4" poster="/media/compare-move-kitchen.jpg" muted loop playsinline preload="none" data-autoplay aria-label="同じキッチンを、部屋の中を歩いて近づきながら映した映像"></video>
               </div>
             </div>
-            <figcaption>キッチン：カメラがゆっくり寄る</figcaption>
+            <figcaption>キッチン：部屋の中を歩いてキッチンに近づく</figcaption>
           </figure>
 
           <figure class="compare">
             <div class="compare-pair">
               <div class="compare-item">
                 <span class="compare-tag">写真</span>
-                <img src="/media/photo-room.jpg" alt="洋室の室内写真。左の壁に腰窓、正面の奥に白いクローゼット" width="1280" height="853" loading="lazy" decoding="async" />
+                <img src="/media/photo-move-room.jpg" alt="洋室の室内写真。正面に腰窓、左に白いクローゼット" width="1280" height="853" loading="lazy" decoding="async" />
               </div>
               <span class="compare-arrow" aria-hidden="true"></span>
               <div class="compare-item">
                 <span class="compare-tag compare-tag-accent">映像</span>
-                <video src="/media/compare-room.mp4" poster="/media/compare-room.jpg" muted loop playsinline preload="none" data-autoplay aria-label="同じ洋室の写真から作った映像。カメラが左へゆっくり振る"></video>
+                <video src="/media/compare-move-room.mp4" poster="/media/compare-move-room.jpg" muted loop playsinline preload="none" data-autoplay aria-label="同じ洋室を、窓を見ながら部屋の奥へ歩いて映した映像"></video>
               </div>
             </div>
-            <figcaption>洋室：カメラが左へゆっくり振る</figcaption>
+            <figcaption>洋室：窓を見ながら部屋の奥へ進む</figcaption>
           </figure>
         </div>
-        {/* TODO(move): 冒頭の映像・比較の映像と写真は、切り替えのときに move の映像から作り直す（scripts/make_media.sh）。下の説明文もそれに合わせる */}
         <p class="note">この比較は架空の物件で、写真もAIで作ったものです。お手持ちの実写の写真からも同じ手順で作りますが、写真の写り方（明るさ・ゆがみ・生活感）によって仕上がりは変わります。</p>
       </div>
     </section>
@@ -96,7 +94,17 @@ import {
     <section class="section section-tint" id="examples">
       <div class="wrap">
         <p class="eyebrow">制作例</p>
-        <h2>料金の目安に合わせた制作例</h2>
+        <h2>実際の住宅の写真15枚から作った例</h2>
+        <div class="main-example">
+          <YouTube video={MAIN_VIDEO} />
+          <div class="main-example-text">
+            <p class="example-label">{MAIN_VIDEO.label}</p>
+            <p class="example-meta">{MAIN_VIDEO.meta}</p>
+            <p>戸建ての1階の室内写真15枚と間取り図から、約139秒の動画にまとめました。玄関から洋室・トイレ・LDK・和室・キッチン・洗面脱衣室・浴室へ、部屋ごとに歩いて見て回ります。各部屋に部屋名のテロップ、冒頭と最後に間取り図と歩く順路のカードを入れ、BGM・環境音・効果音を付けています。</p>
+          </div>
+        </div>
+
+        <h3 class="sub-heading">料金の目安に合わせた制作例</h3>
         <p class="note note-strong">この3本は架空の物件で、間取り図と室内写真もAIで作ったものです。お手持ちの実写の写真からも同じ手順で作りますが、写真の写り方（明るさ・ゆがみ・生活感）によって仕上がりは変わります。</p>
         <div class="size-grid">
           {SIZE_VIDEOS.map((v) => (
@@ -149,6 +157,10 @@ import {
             <h3>部屋名と間取りカード</h3>
             <p>各部屋に部屋名のテロップを入れ、冒頭と最後に間取り図と歩く順路のカードを入れます。</p>
           </li>
+          <li>
+            <h3>BGMと室内の音</h3>
+            <p>BGM、部屋ごとの室内の環境音、テロップとカードの効果音を入れます。音なしの版も一緒にお渡しします。</p>
+          </li>
         </ul>
       </div>
     </section>
@@ -169,7 +181,7 @@ import {
         </div>
         <p class="price-extra"><span>{PRICES[4].photos}</span> {PRICES[4].price}（{PRICES[4].layout}）</p>
         <ul class="check-list">
-          <li>修正1回（部屋名・順番・カードの文言、区間の撮り直し3区間まで）は料金に含まれます</li>
+          <li>修正1回（部屋名・順番・カードの文言、区間の撮り直し3区間まで、音を外す・音量を変える）は料金に含まれます。別の音に作り直す場合は、オプション「音の変更」になります</li>
           <li>間取り図が無い場合や、寸法も専有面積も読み取れない場合、動画に入れたい部屋の写真が無い場合はお受けできません。作れるかどうかは、写真と間取り図を拝見してご注文の前にお伝えします</li>
         </ul>
 
@@ -227,6 +239,7 @@ import {
             <li>写真に写っていない所（物の陰や、写真の外の壁・天井など）は、間取り図をもとにAIが描きます。鏡の映り込みや小さな金属の設備は、実物と違って見えることがあります。初稿でご確認ください</li>
             <li>寸法や設備の正確さを保証するものではありません。窓・扉・設備が実物どおりかは、納品時にお客さまにもご確認をお願いします</li>
             <li>不動産広告でお使いの際も、画面右上の「AI生成映像」の表示は消さずにお使いください</li>
+            <li>音（BGM・環境音・効果音）もAIで作ったものです。環境音は部屋の中の静かな空気の音や換気扇の音だけにしていて、物件の周りの音ではありません</li>
           </ul>
         </div>
 
@@ -237,12 +250,13 @@ import {
               <li>お送りいただく写真・間取り図は、ご依頼者さまが使用する権利をお持ちのもの（自社物件、施主さまの了承済みのものなど）に限ります</li>
               <li>納品した動画は、ご依頼者さまの物件紹介（自社サイト・SNS・店頭）にお使いいただけます。再販売や素材としての配布はできません</li>
               <li>納品した動画をAIの学習に使うことと、AI生成の表示を消して公開することはお控えください</li>
+              <li>動画の音だけを取り出して、別の用途に使うことはご遠慮ください</li>
             </ul>
           </div>
           <div>
             <h3>お預かりする写真・図面の扱い</h3>
-            <p>映像の生成は、手元のPCで動かしている動画生成AI「MiniMax H3」で行います。写真・図面の読み取りと仕上がりの確認には、AIアシスタントを使います。</p>
-            <p>写真に写り込んだ物の消去（オプション）には外部の画像編集サービスを使うため、ご注文の前にご相談します。その場合も、施主さまのお名前や住所が分かる部分は消してから渡します。一部のカットを外部の動画生成サービスで仕上げたい場合も、その都度ご了承をいただいてから行います。</p>
+            <p>映像の生成は、手元のPCで動かしている動画生成AI「MiniMax H3」で行います。音（BGM・環境音・効果音）は、手元のPCで動かしている音声生成AI「Stable Audio 3」で作ります（Powered by Stability AI）。写真・図面の読み取りと仕上がりの確認には、AIアシスタントを使います。</p>
+            <p>写真に写り込んだ物の消去（オプション）には外部の画像編集サービスを使うため、ご注文の前にご相談します。その場合も、施主さまのお名前や住所が分かる部分は消してから渡します。一部の区間を外部の動画生成サービスで仕上げたい場合も、その都度ご了承をいただいてから行います。</p>
             <p>写真の読み取りと写り込みの消去に使うAIサービスは、学習に使わない設定で利用しています。</p>
             <p>お預かりした写真・間取り図と制作データは、納品から30日後に削除します。納品した動画は、受け取り後にお手元で保存してください。</p>
           </div>
