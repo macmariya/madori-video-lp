@@ -32,7 +32,7 @@ d.rounded_rectangle((64, 150, 64 + pw + 48, 202), radius=26, fill=ACC)
 d.text((88, 158), "不動産会社・工務店さま向け", font=f_pill, fill=WHITE)
 d.text((64, 236), "室内写真から作る", font=font(6, 50), fill=WHITE)
 d.text((58, 298), "AI内覧動画", font=font(8, 120), fill=WHITE)
-d.text((66, 452), "写真1枚ごとに、カメラが寄る・振る・前に進む", font=font(6, 32), fill=(235, 238, 242))
+d.text((66, 452), "写真と間取り図から、部屋を歩いて見て回る映像に", font=font(6, 32), fill=(235, 238, 242))
 
 fl = font(5, 22); lw = d.textlength("AI生成映像", font=fl)
 d.rounded_rectangle((W - 40 - lw - 28, 28, W - 40, 66), radius=8, fill=(30, 30, 30))
