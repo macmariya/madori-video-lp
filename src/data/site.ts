@@ -39,7 +39,7 @@ export type Video = {
 };
 
 // 制作例は move 版（部屋ごとに歩く。2026-10-19 ユーザー決定で still と walk の制作例は外した）。
-// MAIN_VIDEO は実在の住宅（制作者の自宅の 1 階）、SIZE_VIDEOS は架空 1K・1LDK・2LDK。どれも音入り（2026-10-20 に音入りを標準にした）。
+// MAIN_VIDEO は実在の住宅（戸建ての 1 階）、SIZE_VIDEOS は架空 1K・1LDK・2LDK。どれも音入り（2026-10-20 に音入りを標準にした）。
 // YouTube は 4 本とも限定公開（2026-10-20 にユーザーがアップロード）。ポスター画像は scripts/make_media.sh
 export const MAIN_VIDEO: Video = {
   id: 'SMeuQ7Phhx4',
