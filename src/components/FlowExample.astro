@@ -1,0 +1,128 @@
+---
+// 架空物件の制作例 1 本ぶん: お送りいただく図面と写真（スライド）→ 完成した動画。
+// スライドは横スクロール（scroll-snap）なので、スマホは指で送れ、JS が無くても横にスクロールして見られる。
+// 前後のボタンと「n / 枚数」の表示は JS で動かす。
+import YouTube from './YouTube.astro';
+import type { SizeExample } from '../data/site';
+interface Props { video: SizeExample }
+const { video } = Astro.props;
+const total = video.slides.length;
+---
+<article class="ex-flow">
+  <p class="ex-head"><span class="example-label">{video.label}</span><span class="example-meta">{video.meta}・架空物件</span></p>
+  <div class="ex-pair">
+    <div class="ex-col">
+      <p class="ex-step">お送りいただく間取り図と写真</p>
+      <div class="slider" data-slider>
+        <ul class="slides" tabindex="0" aria-label={`${video.label}の間取り図と写真（左右にスクロール）`}>
+          {video.slides.map((s, i) => (
+            <li class="slide" aria-label={`${i + 1} / ${total}`}>
+              <img src={s.src} alt={s.cap} width="1080" height="720" loading="lazy" decoding="async" />
+            </li>
+          ))}
+        </ul>
+        <button type="button" class="slider-btn slider-prev" aria-label="前の画像" disabled>
+          <span aria-hidden="true"></span>
+        </button>
+        <button type="button" class="slider-btn slider-next" aria-label="次の画像">
+          <span aria-hidden="true"></span>
+        </button>
+      </div>
+      <p class="slider-cap"><span class="slider-name">{video.slides[0].cap}</span><span class="slider-count">1 / {total}</span></p>
+    </div>
+    <span class="compare-arrow" aria-hidden="true"></span>
+    <div class="ex-col">
+      <p class="ex-step ex-step-accent">完成した動画</p>
+      <YouTube video={video} />
+    </div>
+  </div>
+</article>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-slider]').forEach((root) => {
+    const list = root.querySelector<HTMLElement>('.slides')!;
+    const items = [...list.children] as HTMLElement[];
+    const prev = root.querySelector<HTMLButtonElement>('.slider-prev')!;
+    const next = root.querySelector<HTMLButtonElement>('.slider-next')!;
+    const cap = root.parentElement!.querySelector<HTMLElement>('.slider-name')!;
+    const count = root.parentElement!.querySelector<HTMLElement>('.slider-count')!;
+    let cur = 0;
+    const update = () => {
+      cur = Math.round(list.scrollLeft / list.clientWidth);
+      cur = Math.max(0, Math.min(items.length - 1, cur));
+      cap.textContent = items[cur].querySelector('img')!.alt;
+      count.textContent = `${cur + 1} / ${items.length}`;
+      prev.disabled = cur === 0;
+      next.disabled = cur === items.length - 1;
+    };
+    const go = (i: number) => list.scrollTo({ left: i * list.clientWidth, behavior: 'smooth' });
+    prev.addEventListener('click', () => go(cur - 1));
+    next.addEventListener('click', () => go(cur + 1));
+    list.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft') { e.preventDefault(); go(cur - 1); }
+      if (e.key === 'ArrowRight') { e.preventDefault(); go(cur + 1); }
+    });
+    let t = 0;
+    list.addEventListener('scroll', () => { cancelAnimationFrame(t); t = requestAnimationFrame(update); }, { passive: true });
+    window.addEventListener('resize', () => go(cur));
+  });
+</script>
+
+<style>
+  .ex-flow { margin: 0; padding: 24px; background: #fff; border-radius: var(--radius); }
+  .ex-flow + .ex-flow { margin-top: 24px; }
+  .ex-head { margin: 0 0 14px; display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; }
+  .ex-head .example-meta { margin: 0; }
+  .ex-pair { display: grid; grid-template-columns: 1fr 40px 1fr; align-items: start; }
+  .ex-pair > .compare-arrow { align-self: center; }
+  .ex-step { margin: 0 0 8px; font-size: 14px; font-weight: 700; color: var(--navy); }
+  .ex-step-accent { color: var(--accent-dark); }
+  .slider { position: relative; }
+  /* 図面は白地なので、写真と同じ枠の大きさが分かるよう細い線で囲む */
+  .slider::after { content: ""; position: absolute; inset: 0; border-radius: var(--radius); box-shadow: inset 0 0 0 1px var(--line); pointer-events: none; }
+  .slides {
+    display: flex;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    border-radius: var(--radius);
+    aspect-ratio: 3 / 2;
+    background: #fff;
+  }
+  .slides::-webkit-scrollbar { display: none; }
+  .slides:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+  .slide { flex: 0 0 100%; scroll-snap-align: start; }
+  .slide img { display: block; width: 100%; height: 100%; object-fit: cover; }
+  .slider-btn {
+    position: absolute;
+    top: 50%;
+    translate: 0 -50%;
+    width: 40px;
+    height: 40px;
+    border: 0;
+    border-radius: 50%;
+    background: rgb(28 40 58 / 0.72);
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    transition: background 0.2s ease, opacity 0.2s ease;
+  }
+  .slider-btn:hover { background: var(--accent); }
+  .slider-btn:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+  .slider-btn:disabled { opacity: 0; pointer-events: none; }
+  .slider-btn span { width: 10px; height: 10px; border-top: 2.5px solid #fff; border-right: 2.5px solid #fff; }
+  .slider-prev { left: 10px; }
+  .slider-prev span { rotate: -135deg; margin-left: 4px; }
+  .slider-next { right: 10px; }
+  .slider-next span { rotate: 45deg; margin-right: 4px; }
+  .slider-cap { display: flex; justify-content: space-between; gap: 12px; margin: 8px 0 0; font-size: 14px; color: var(--muted); }
+  .slider-name { font-weight: 600; color: var(--navy); }
+  @media (max-width: 760px) {
+    .ex-flow { padding: 16px; }
+    .ex-pair { grid-template-columns: 1fr; gap: 12px; }
+    .ex-pair > .compare-arrow { rotate: 135deg; }
+  }
+</style>

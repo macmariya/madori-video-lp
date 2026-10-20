@@ -198,13 +198,9 @@ ul, ol { margin: 0; padding: 0; }
 .main-example { display: grid; grid-template-columns: 3fr 2fr; gap: 36px; align-items: center; }
 .example-label { display: block; font-weight: 800; color: var(--navy); font-size: 18px; margin: 0; }
 .example-meta { display: block; color: var(--muted); font-size: 14px; margin: 0 0 12px; }
-.size-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 20px; }
-.size-card { margin: 0; }
-.size-card figcaption { margin-top: 10px; }
-.size-card .example-label { font-size: 16px; }
+.ex-lead { color: var(--muted); margin: 20px 0 16px; }
 @media (max-width: 900px) {
   .main-example { grid-template-columns: 1fr; gap: 20px; }
-  .size-grid { grid-template-columns: 1fr; }
 }
 
 /* 場面 */

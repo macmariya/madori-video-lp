@@ -1,6 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import YouTube from '../components/YouTube.astro';
+import FlowExample from '../components/FlowExample.astro';
 import SiteHeader from '../components/SiteHeader.astro';
 import SiteFooter from '../components/SiteFooter.astro';
 import {
@@ -106,13 +107,9 @@ import {
 
         <h3 class="sub-heading">料金の目安に合わせた制作例</h3>
         <p class="note note-strong">この3本は架空の物件で、間取り図と室内写真もAIで作ったものです。お手持ちの実写の写真からも同じ手順で作りますが、写真の写り方（明るさ・ゆがみ・生活感）によって仕上がりは変わります。</p>
-        <div class="size-grid">
-          {SIZE_VIDEOS.map((v) => (
-            <figure class="size-card">
-              <YouTube video={v} />
-              <figcaption><span class="example-label">{v.label}</span><span class="example-meta">{v.meta}・架空物件</span></figcaption>
-            </figure>
-          ))}
+        <p class="ex-lead">左はお送りいただく間取り図と写真（矢印かスワイプで切り替わります）、右はそこから作った動画です。</p>
+        <div class="ex-list">
+          {SIZE_VIDEOS.map((v) => <FlowExample video={v} />)}
         </div>
       </div>
     </section>

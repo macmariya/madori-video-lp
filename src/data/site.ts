@@ -49,10 +49,29 @@ export const MAIN_VIDEO: Video = {
   poster: '/media/yt-move-house.jpg',
 };
 
-export const SIZE_VIDEOS: Video[] = [
-  { id: 'HYDOhBbbn-A', title: '1K・写真6枚の制作例（架空物件）', label: '1K・写真6枚', meta: '約48秒', poster: '/media/yt-move-1k.jpg' },
-  { id: '3kdyW_dPL_0', title: '1LDK・写真8枚の制作例（架空物件）', label: '1LDK・写真8枚', meta: '約75秒', poster: '/media/yt-move-1ldk.jpg' },
-  { id: 'zCOAgLBrFic', title: '2LDK・写真10枚の制作例（架空物件）', label: '2LDK・写真10枚', meta: '約73秒', poster: '/media/yt-move-2ldk.jpg' },
+export type Slide = { src: string; cap: string };
+export type SizeExample = Video & { slides: Slide[] };
+
+// 架空物件の制作例は、お送りいただく図面と写真（スライド）と完成した動画を並べて見せる（2026-10-20 ユーザー決定）。
+// スライドの画像は scripts/make_flow_media.py。部屋名は blog-vault の 10_Input/{slug}/写真対応表.md の「写っている部屋」
+const slides = (key: string, rooms: string[]): Slide[] => [
+  { src: `/media/flow-${key}-plan.jpg`, cap: '間取り図' },
+  ...rooms.map((r, i) => ({ src: `/media/flow-${key}-${String(i + 1).padStart(2, '0')}.jpg`, cap: `写真${i + 1}　${r}` })),
+];
+
+export const SIZE_VIDEOS: SizeExample[] = [
+  {
+    id: 'HYDOhBbbn-A', title: '1K・写真6枚の制作例（架空物件）', label: '1K・写真6枚', meta: '約48秒', poster: '/media/yt-move-1k.jpg',
+    slides: slides('1k', ['玄関', 'キッチン', '洋室', '浴室', '洗面室', 'トイレ']),
+  },
+  {
+    id: '3kdyW_dPL_0', title: '1LDK・写真8枚の制作例（架空物件）', label: '1LDK・写真8枚', meta: '約75秒', poster: '/media/yt-move-1ldk.jpg',
+    slides: slides('1ldk', ['玄関', 'LDK（キッチン側）', 'LDK（窓側）', 'キッチン', '洋室', '浴室', '洗面室', 'トイレ']),
+  },
+  {
+    id: 'zCOAgLBrFic', title: '2LDK・写真10枚の制作例（架空物件）', label: '2LDK・写真10枚', meta: '約73秒', poster: '/media/yt-move-2ldk.jpg',
+    slides: slides('2ldk', ['玄関', 'ホール', 'LDK（キッチン側）', 'LDK（窓側）', 'キッチン', '洋室1', '洋室2', '浴室', '洗面室', 'トイレ']),
+  },
 ];
 
 export const PRICES = [

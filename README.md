@@ -45,9 +45,10 @@ npm run build      # dist/ に出力
 ```bash
 bash scripts/make_media.sh
 ~/dev/blog-vault/31_Project/間取り図動画/20_3D/.venv/bin/python scripts/make_ogp.py
+~/dev/blog-vault/31_Project/間取り図動画/20_3D/.venv/bin/python scripts/make_flow_media.py   # 制作例のスライド（flow-*.jpg）
 ```
 
-冒頭と「写真と映像の比較」は、架空 1LDK の move 版の生成クリップ（テロップを入れる前の色合わせ済みの版。`40_Video/20261019_架空1LDKmove/local_h3/`）と入力写真から作る。制作例 4 本のポスターは完成動画の 1 コマ（自宅はこの 1 コマだけ）。2026-10-20 に move へ切り替えたとき、キャッシュを避けるため名前を `*-move.*` に変えた。作り直すときも名前を変え、`src/` の参照を直す。
+架空 3 本の制作例は、お送りいただく間取り図と写真のスライド（`src/components/FlowExample.astro`）と完成動画を並べる。スライドの画像は架空物件の入力（`10_Input/20261019_架空*move/` の `plan.png` と `photos/`）から `make_flow_media.py` で作る（2026-10-20）。冒頭と「写真と映像の比較」は、架空 1LDK の move 版の生成クリップ（テロップを入れる前の色合わせ済みの版。`40_Video/20261019_架空1LDKmove/local_h3/`）と入力写真から作る。制作例 4 本のポスターは完成動画の 1 コマ（自宅はこの 1 コマだけ）。2026-10-20 に move へ切り替えたとき、キャッシュを避けるため名前を `*-move.*` に変えた。作り直すときも名前を変え、`src/` の参照を直す。
 
 ## フォームのローカル検証
 
