@@ -199,6 +199,13 @@ ul, ol { margin: 0; padding: 0; }
 .example-label { display: block; font-weight: 800; color: var(--navy); font-size: 18px; margin: 0; }
 .example-meta { display: block; color: var(--muted); font-size: 14px; margin: 0 0 12px; }
 .ex-lead { color: var(--muted); margin: 20px 0 16px; }
+.short-list { list-style: none; display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; max-width: 760px; }
+.short-card { display: block; text-decoration: none; }
+.short-card img { display: block; width: 100%; height: auto; aspect-ratio: 9 / 16; border-radius: var(--radius); box-shadow: 0 2px 10px rgb(0 0 0 / 0.12); margin-bottom: 10px; transition: transform 0.2s ease; }
+.short-card:hover img { transform: translateY(-3px); }
+.short-card .example-label { font-size: 16px; }
+.short-card .example-meta { margin: 0; }
+@media (max-width: 760px) { .short-list { grid-template-columns: repeat(2, 1fr); gap: 16px; } }
 @media (max-width: 900px) {
   .main-example { grid-template-columns: 1fr; gap: 20px; }
 }

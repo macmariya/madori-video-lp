@@ -74,6 +74,16 @@ export const SIZE_VIDEOS: SizeExample[] = [
   },
 ];
 
+// 縦型（9:16）の版。横の完成版を /make-madori-shorts の帯レイアウトで並べ直したもの（blog-vault の 31_Project/間取り図動画/24_縦動画）。
+// 2026-10-26 にユーザーが YouTube ショートへアップロード。LP には埋め込まず、YouTube のショートへのリンクだけ置く。ポスターは scripts/make_media.sh
+export type Short = { id: string; label: string; meta: string; poster: string };
+export const SHORTS: Short[] = [
+  { id: 'KBxDPMaRrwA', label: '戸建ての1階', meta: '約139秒', poster: '/media/short-move-house.jpg' },
+  { id: 'YuHASlmSrcQ', label: '1K', meta: '約48秒・架空物件', poster: '/media/short-move-1k.jpg' },
+  { id: 'orV4jAyW5Ms', label: '1LDK', meta: '約75秒・架空物件', poster: '/media/short-move-1ldk.jpg' },
+  { id: 'JIn5ynhDjcQ', label: '2LDK', meta: '約73秒・架空物件', poster: '/media/short-move-2ldk.jpg' },
+];
+
 export const PRICES = [
   { photos: `${PRICING.base_photos}枚まで`, price: yen(estimate(PRICING.base_photos)), layout: '1R・1K' },
   { photos: '8枚', price: yen(estimate(8)), layout: '1LDK' },

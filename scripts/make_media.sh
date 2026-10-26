@@ -37,6 +37,13 @@ poster "$SRC/50_Deliverables/20261019_架空1Kmove/20261019_架空1Kmove_v1_audi
 poster "$SRC/50_Deliverables/20261019_架空1LDKmove/20261019_架空1LDKmove_v1_audio.mp4" 52 yt-move-1ldk        # LDK の掃き出し窓 2 つ（74.75 秒の版）
 poster "$SRC/50_Deliverables/20261019_架空2LDKmove/20261019_架空2LDKmove_v1_audio.mp4" 56.5 yt-move-2ldk      # キッチンの正面（72.96 秒の版）
 
+# 縦型の版（YouTube ショート）4 本のポスター。リンクだけで埋め込まない。横のポスターと同じ秒のコマ（1080x1920 を 360x640 に縮小）
+short() { ffmpeg -v error -y -ss "$2" -i "$1" -frames:v 1 -vf scale=360:640:flags=lanczos -q:v 4 "$OUT/$3.jpg"; }
+short "$SRC/50_Deliverables/20261017_bwまたぎ/20261017_自宅_bw部屋またぎ通し_v4_audio_縦.mp4" 78 short-move-house
+short "$SRC/50_Deliverables/20261019_架空1Kmove/20261019_架空1Kmove_v1_audio_縦.mp4" 14 short-move-1k
+short "$SRC/50_Deliverables/20261019_架空1LDKmove/20261019_架空1LDKmove_v1_audio_縦.mp4" 52 short-move-1ldk
+short "$SRC/50_Deliverables/20261019_架空2LDKmove/20261019_架空2LDKmove_v1_audio_縦.mp4" 56.5 short-move-2ldk
+
 ls -la "$OUT"
 
 # OGP の背景（冒頭と同じ LDK の 1 コマ）。make_ogp.py が読む。コミットしない

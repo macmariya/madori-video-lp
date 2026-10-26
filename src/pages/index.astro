@@ -5,7 +5,7 @@ import FlowExample from '../components/FlowExample.astro';
 import SiteHeader from '../components/SiteHeader.astro';
 import SiteFooter from '../components/SiteFooter.astro';
 import {
-  SITE, MAIN_VIDEO, SIZE_VIDEOS, PRICES, OPTIONS, DELIVERABLES, FLOW, FAQ,
+  SITE, MAIN_VIDEO, SIZE_VIDEOS, SHORTS, PRICES, OPTIONS, DELIVERABLES, FLOW, FAQ,
 } from '../data/site';
 ---
 <Base>
@@ -111,6 +111,20 @@ import {
         <div class="ex-list">
           {SIZE_VIDEOS.map((v) => <FlowExample video={v} />)}
         </div>
+
+        <h3 class="sub-heading">縦型（ショート・リール向け）の版</h3>
+        <p class="ex-lead">上の4本を、スマホの縦の画面に並べ直した版です。ご希望の方には無料でお付けします。画像を押すとYouTubeのショートが開きます。</p>
+        <ul class="short-list">
+          {SHORTS.map((v) => (
+            <li>
+              <a class="short-card" href={`https://www.youtube.com/shorts/${v.id}`} target="_blank" rel="noopener">
+                <img src={v.poster} alt={`${v.label}の縦型の版`} width="360" height="640" loading="lazy" decoding="async" />
+                <span class="example-label">{v.label}</span>
+                <span class="example-meta">{v.meta}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
       </div>
     </section>
 
