@@ -65,7 +65,7 @@ if ($method === 'GET') {
                    i.photo_source, i.usage, i.wants_object_removal, i.desired_deadline, i.expected_volume,
                    i.contact_preference, i.message, i.estimate_amount, i.price_version, i.quote_amount, i.replied_at,
                    i.quoted_at, i.closed_at, i.lost_reason, i.consent_at, i.form_version, i.source_page, i.referrer,
-                   i.utm_source, i.utm_medium, i.utm_campaign, i.created_at, i.updated_at,
+                   i.utm_source, i.utm_medium, i.utm_campaign, i.created_at, i.updated_at, i.raw_json,
                    c.email AS customer_email, c.note AS customer_note
             FROM inquiries i JOIN customers c ON c.id = i.customer_id';
     $params = [];
@@ -80,6 +80,9 @@ if ($method === 'GET') {
     $rows = $st->fetchAll();
     foreach ($rows as &$r) {
         $r['usage'] = json_decode((string)$r['usage'], true) ?: [];
+        // 縦型の版の希望は列が無く raw_json にだけある（2026-10-26 追加。それより前の行は 0）。raw_json そのものは渡さない
+        $r['wants_vertical'] = !empty((json_decode((string)$r['raw_json'], true) ?: [])['wants_vertical']) ? 1 : 0;
+        unset($r['raw_json']);
         foreach (['id', 'photo_count', 'wants_object_removal', 'estimate_amount', 'quote_amount'] as $k) {
             $r[$k] = $r[$k] === null ? null : (int)$r[$k];
         }

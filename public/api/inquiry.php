@@ -130,6 +130,8 @@ if ($contactPref === 'phone' && $phone === null) {
 }
 $usage = array_values(array_intersect(option_values($form, 'usage'), (array)($_POST['usage'] ?? [])));
 $wantsRemoval = isset($_POST['wants_object_removal']) ? 1 : 0;
+// 縦型の版の希望（2026-10-26 追加）。DB の列は作らず raw_json にだけ残し、sync.php が取り出して NAS へ渡す
+$wantsVertical = isset($_POST['wants_vertical']) ? 1 : 0;
 $deadline = $in('desired_deadline');
 if ($deadline !== '' && !preg_match('/^\d{4}-\d{2}-\d{2}$/', $deadline)) {
     $errors[] = 'ご希望の納期の形式が正しくありません。';
@@ -152,7 +154,7 @@ $now = now_iso();
 
 // フォームにある欄だけを、1 つ 2000 文字までで残す（知らない欄や長い値で DB を太らせないため。2026-10-14）
 $rawKeys = ['company_name', 'customer_type', 'contact_name', 'email', 'phone', 'prefecture', 'property_type', 'layout',
-    'photo_count', 'floorplan_type', 'photo_source', 'usage', 'wants_object_removal', 'desired_deadline', 'expected_volume',
+    'photo_count', 'floorplan_type', 'photo_source', 'usage', 'wants_object_removal', 'wants_vertical', 'desired_deadline', 'expected_volume',
     'contact_preference', 'message', 'consent', 'started_at', 'source_page', 'referrer', 'utm_source', 'utm_medium', 'utm_campaign'];
 $raw = [];
 foreach ($rawKeys as $k) {
@@ -242,6 +244,7 @@ $lines = [
     '写真の状態：' . ($photoSource === null ? '（未選択）' : option_label($form, 'photo_source', $photoSource)),
     '使い道：' . ($usageLabels === '' ? '（未選択）' : $usageLabels),
     '写り込んだ物の消去の相談：' . ($wantsRemoval ? 'あり' : 'なし'),
+    '縦型の版：' . ($wantsVertical ? '希望する' : '希望しない'),
     'ご希望の納期：' . ($deadline === '' ? '（未入力）' : $deadline),
     '今後のご依頼の見込み：' . ($expectedVolume === null ? '（未選択）' : option_label($form, 'expected_volume', $expectedVolume)),
     '',

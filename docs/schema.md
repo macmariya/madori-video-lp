@@ -54,6 +54,7 @@ ordered → materials_received → in_production → first_draft_sent → revisi
 - **選択肢**は英字の値で保存し、表示名は `form.json` から引く。選択肢を増やすときは値を変えずに足す（過去の行が読めなくなるため）
 - **料金の概算**（`estimate_amount`）は送信時の料金表（`price_version`）で計算した値。価格を改定したら `form.json` の `pricing.version` を変える。見積で出した額は `quote_amount`、受注の確定額は `orders.amount`
 - **送信された項目そのもの**を `raw_json` に残す。フォームの項目を増減しても過去分の中身を失わない（`form_version` でどの版のフォームかが分かる）。残すのはフォームにある欄だけで、値は 1 つ 2000 文字まで（2026-10-14。知らない欄や長い値で DB を太らせないため）。項目を足したら `inquiry.php` の `$rawKeys` にも足す
+- **縦型の版の希望（`wants_vertical`）は列を作らず `raw_json` にだけ残す**（2026-10-26。フォームの版 `2026-10-26`）。`sync.php` の GET が `raw_json` から取り出して 0 / 1 で渡す（それより前の行は 0）。`migrate()` は `schema.sql` を流し直すだけで既存の表に列を足せないため、列にするときは `ALTER TABLE` の手順を別に書く
 - **顧客情報**は `customers` に最新の値を持ち、`inquiries` にも送信時点の写しを持つ（社名変更・担当者の交代に耐える）
 - **IP アドレス**は保存せず、`sha256(塩 + IP)` だけを持つ（連続送信の制限と迷惑送信の把握に使う）。`CF-Connecting-IP` は、つないできた相手が Cloudflare の IP 帯（`_lib.php` の `CLOUDFLARE_RANGES`）のときだけ使い、それ以外はつないできた相手の IP を使う（サーバー側が送信元をすでに書き換えていれば、それをそのまま使う。2026-10-14）。Cloudflare が IP 帯を変えたら書き直す。バリューサーバーはどこから来た通信でも `CF-Connecting-IP` で送信元を書き換えるので、偽装はこれでは防げない。Cloudflare の Transform Rule が付ける合言葉のヘッダー `X-Origin-Auth`（設定の `origin_secret`）が無いフォームの送信を断って防ぐ（2026-10-15。手順は README の「Cloudflare を通らない送信を断る」）
 - **連続送信の制限**は同じ送信元から 1 時間に 5 回。`submission_log` の `ok`・`origin`（他サイトからの送信）・`honeypot`・`too_fast`・`turnstile` を数え、入力の誤り（`invalid`）は数えない。Turnstile より前に記録を書く判定より先に確かめ、断った `rate_limited` は 1 時間に 1 行だけ書く。`detail` は 300 文字で切る
