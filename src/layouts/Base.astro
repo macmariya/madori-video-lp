@@ -58,7 +58,32 @@ const jsonLd = {
     <meta name="twitter:card" content="summary_large_image" />
 
     <slot name="head" />
-    {withJsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
+    {import.meta.env.PROD && (
+      <>
+        {/* アクセス解析（GA4）。ブログ www.macmariya.com と同じプロパティに送り、レポートはホスト名で分ける。
+            提案メールのリンクには相手ごとに ?utm_source= を付ける。自分の閲覧は ?no_ga=1 を一度開くとこのブラウザで送らなくなる（?no_ga=0 で戻す） */}
+        <script is:inline>
+          (function () {
+            var ID = 'G-M8F6S44L6B';
+            try {
+              var q = new URLSearchParams(location.search).get('no_ga');
+              if (q === '1') localStorage.setItem('no_ga', '1');
+              if (q === '0') localStorage.removeItem('no_ga');
+              if (localStorage.getItem('no_ga') === '1') return;
+            } catch (e) {}
+            var s = document.createElement('script');
+            s.async = true;
+            s.src = 'https://www.googletagmanager.com/gtag/js?id=' + ID;
+            document.head.appendChild(s);
+            window.dataLayer = window.dataLayer || [];
+            window.gtag = function () { window.dataLayer.push(arguments); };
+            window.gtag('js', new Date());
+            window.gtag('config', ID);
+          })();
+        </script>
+      </>
+    )}
+    {withJsonLd &&<script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
   </head>
   <body>
     <slot />

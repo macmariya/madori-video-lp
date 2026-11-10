@@ -30,6 +30,13 @@
 - 音（BGM・環境音・効果音）は Stable Audio 3 で作っているので、写真の扱いの節の「Powered by Stability AI」は消さない（Stability AI Community License 第 IV 条 (a)。blog-vault `31_Project/間取り図動画/60_Sales/権利確認.md` §8）
 - 環境音は室内の音だけと書いている。屋外の音（鳥・車など）は、物件の周りの環境を実際より良く見せるおそれがあるので標準にしない（`01_マネタイズ設計.md` §1.9）
 
+## アクセス解析（2026-11-10 追加）
+
+- 本番ビルドだけ、全ページに GA4 のタグを入れる（`src/layouts/Base.astro`）。測定 ID はブログ www.macmariya.com と同じ `G-M8F6S44L6B` で、GA ではホスト名 `madori.macmariya.com` で絞って見る。プライバシーポリシー（www.macmariya.com/policy）はサブドメインとアクセス解析の Cookie を対象にしている
+- 提案メールの LP のリンクには相手ごとに `?utm_source={相手}&utm_medium=email&utm_campaign=teian2611` を付ける。GA の「セッションの参照元」に相手の名前が出る
+- 自分の閲覧を数えないときは、そのブラウザで一度 `https://madori.macmariya.com/?no_ga=1` を開く（localStorage に記録し、GA のタグを読み込まなくなる。`?no_ga=0` で戻す）
+- このほか Cloudflare が Web Analytics のビーコン（static.cloudflareinsights.com）を自動で差し込んでいる。過去のアクセスはそちらのダッシュボードで見られる
+
 ## 開発
 
 ```bash
